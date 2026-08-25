@@ -13,13 +13,16 @@ class OteMyLangContractTest(unittest.TestCase):
     def test_direction_shifts_require_opposite_pivot(self):
         self.assertIn("VALIDUP:=HH0 AND HASPL;", self.source)
         self.assertIn("VALIDDN:=LL0 AND HASPH;", self.source)
-        self.assertIn("UPSHIFT:=VALIDUP", self.source)
-        self.assertIn("DNSHIFT:=VALIDDN", self.source)
+        self.assertIn("UPSHIFT:=VALIDUP;", self.source)
+        self.assertIn("DNSHIFT:=VALIDDN;", self.source)
 
     def test_debug_layer_exposes_state(self):
         self.assertIn("DEBUG:=1;", self.source)
-        self.assertIn("OTE waiting for HH/LL", self.source)
+        self.assertIn("OTE waiting for valid HH/LL", self.source)
         self.assertIn("OTE inactive", self.source)
+
+    def test_validation_defaults_do_not_hide_first_grid(self):
+        self.assertIn("INVALIDATE:=0;", self.source)
 
 
 if __name__ == "__main__":
