@@ -7,7 +7,7 @@ body:
     id: module
     attributes:
       label: Module
-      options: [SMC_STR, SMC_OB, SMC_IMB]
+      options: [OTE, SMC_STR, SMC_OB, SMC_IMB]
     validations:
       required: true
   - type: input

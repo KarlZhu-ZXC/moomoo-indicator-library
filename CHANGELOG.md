@@ -1,5 +1,13 @@
 # Changelog
 
+## Library 4.0 — 2026-08-25
+
+- Reorganized the repository as the moomoo Indicator Library.
+- Moved Smart Money Concepts into `indicators/smc/`.
+- Added standalone `OTE` v1.0 under `indicators/ote/`.
+- Implemented HH/LL direction shifts, dynamic Fibonacci stretching, the 61.8%–78.6% OTE zone, and the 70.5% reference.
+- Updated validation and CI to discover indicators recursively.
+
 ## 3.2 — 2026-08-25
 
 - Added ATR-adaptive label gaps for internal, swing, EQH/EQL and Strong/Weak labels.
@@ -18,4 +26,3 @@
 
 - Rebased the implementation on the pinned LuxAlgo Pine v5 source baseline.
 - Split the suite into `SMC_STR`, `SMC_OB`, and `SMC_IMB`.
-

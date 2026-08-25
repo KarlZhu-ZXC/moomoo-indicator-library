@@ -1,8 +1,20 @@
 # Attribution and modification notice
 
-This repository is an adapted work based on **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo.
+This repository contains multiple independent indicator collections. Attribution differs by collection.
 
-## Original work
+## Optimal Trade Entry collection
+
+`indicators/ote/OTE.py` is an independent implementation of the commonly taught ICT-style Fibonacci retracement framework. Its pivot/shift, dynamic-stretching, and visual behavior are informed by the public description of **Smart Money Fibonacci OTE Engine [ChartPrime]**:
+
+https://www.tradingview.com/script/iR7drqnn-Smart-Money-Fibonacci-OTE-Engine-ChartPrime/
+
+No ChartPrime Pine source code is included or copied. The implementation does not claim affiliation with or endorsement by ICT or ChartPrime.
+
+## Smart Money Concepts collection
+
+The files under `indicators/smc/` adapt **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo.
+
+### Original work
 
 - Author: LuxAlgo
 - Title: Smart Money Concepts (SMC) [LuxAlgo]
@@ -11,7 +23,7 @@ This repository is an adapted work based on **Smart Money Concepts (SMC) [LuxAlg
 - Baseline commit: `31756c8615aff4cefe9cf97350e78bd427f663cd`
 - Original license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 
-## Modifications in this repository
+### Modifications in this repository
 
 The Pine v5 indicator was adapted for the moomoo Python custom-indicator runtime. The work was split into Structure, Order Blocks, and Imbalance modules; Pine object state was rebuilt with static sequence operations; rendering was adapted to moomoo's 50-plot limit; and additional label-spacing and OB/FVG label controls were added.
 
@@ -19,5 +31,4 @@ The implementation is not a line-for-line translation and does not include a cop
 
 ## No affiliation
 
-This is an unofficial community adaptation. It is not affiliated with, endorsed by, or sponsored by LuxAlgo, TradingView, moomoo, or Futu. All product names and trademarks belong to their respective owners.
-
+This is an unofficial community project. It is not affiliated with, endorsed by, or sponsored by ICT, ChartPrime, LuxAlgo, TradingView, moomoo, or Futu. All product names and trademarks belong to their respective owners.

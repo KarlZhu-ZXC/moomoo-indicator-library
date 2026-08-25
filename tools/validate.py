@@ -51,14 +51,15 @@ def validate(path: Path) -> list[str]:
     if len(plots) > 50:
         errors.append(f"{path}: {len(plots)} plot calls exceeds the 50-call limit")
 
-    print(f"{path.name}: syntax PASS; plots {len(plots)}/50")
+    repository_root = Path(__file__).resolve().parents[1]
+    print(f"{path.relative_to(repository_root)}: syntax PASS; plots {len(plots)}/50")
     return errors
 
 
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     errors: list[str] = []
-    for path in sorted((root / "indicators").glob("*.py")):
+    for path in sorted((root / "indicators").rglob("*.py")):
         errors.extend(validate(path))
     if errors:
         print("\n".join(errors), file=sys.stderr)
@@ -69,4 +70,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

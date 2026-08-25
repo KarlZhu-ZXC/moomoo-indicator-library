@@ -23,5 +23,4 @@
 - `plot_stickline` uses the client-confirmed nine-argument signature.
 - Disconnected `plot()` runs may be joined; independent structure segments therefore use stickline primitives.
 
-The files pass ordinary Python syntax compilation and repository-level static checks. The moomoo desktop client remains the authoritative compiler and renderer because `ftool` is provided by that environment.
-
+The SMC files pass ordinary Python syntax compilation and repository-level static checks. The moomoo desktop client remains the authoritative compiler and renderer because `ftool` is provided by that environment.
