@@ -14,7 +14,6 @@ NEGATIVE_COMPARE = re.compile(r"(?:=|<>)-\d")
 ASSIGNMENT = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*)\s*:(?:=|(?!=))", re.MULTILINE)
 FUNCTION_CALL = re.compile(r"\b([A-Za-z][A-Za-z0-9_]*)\s*\(")
 IDENTIFIER = re.compile(r"\b[A-Za-z][A-Za-z0-9_]*\b")
-DYNAMIC_WINDOW = re.compile(r"\b(?:HHV|LLV)\s*\(\s*[^,]+,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)", re.IGNORECASE)
 COUNT_ZERO = re.compile(r"\bCOUNT\s*\([^,]+,\s*0\s*\)", re.IGNORECASE)
 
 RESERVED_ASSIGNMENTS = {"NDAY"}
@@ -109,15 +108,6 @@ def validate_mylang(path: Path) -> ValidationResult:
     functions = {name.upper() for name in FUNCTION_CALL.findall(code)}
     for name in sorted(functions & UNSUPPORTED_FUNCTIONS):
         result.add(0, "ML107", "ERROR", f"unsupported tested MyLang function: {name}(...)")
-
-    dynamic_names = {name.upper() for name in DYNAMIC_WINDOW.findall(code)}
-    for name in sorted(dynamic_names):
-        result.add(
-            0,
-            "ML201",
-            "WARNING",
-            f"dynamic HHV/LLV period '{name}' requires real moomoo client validation",
-        )
 
     if COUNT_ZERO.search(code):
         result.add(

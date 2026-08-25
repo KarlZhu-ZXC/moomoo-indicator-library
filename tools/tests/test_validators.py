@@ -54,9 +54,9 @@ class ValidatorTestCase(unittest.TestCase):
         self.assertIn("ML106", rules)
         self.assertIn("ML107", rules)
 
-    def test_mylang_dynamic_window_warning(self):
+    def test_mylang_dynamic_window_is_supported(self):
         path = self.temporary_file(".mylang", "WIN:=5;\nA:=HHV(H,WIN);\n")
-        self.assertIn("ML201", self.rules(validate_mylang(path)))
+        self.assertNotIn("ML201", self.rules(validate_mylang(path)))
 
     def test_mylang_external_parameter_warning(self):
         path = self.temporary_file(".mylang", "A:=EXTERNAL+1;\n")

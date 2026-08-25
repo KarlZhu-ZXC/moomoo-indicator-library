@@ -20,7 +20,7 @@
 | Collection | Indicators | Status | Description |
 |---|---|---|---|
 | [Smart Money Concepts](indicators/smc/) | `SMC_STR`, `SMC_OB`, `SMC_IMB` | Stable · v3.2 | Structure, BOS/CHoCH, Order Blocks, FVGs, EQH/EQL, and value zones |
-| [Optimal Trade Entry](indicators/ote/) | `OTE`, `OTE_ML` | Python v1.0 · MyLang experimental | HH/LL direction-shift Fibonacci grid with a dynamic 61.8%–78.6% zone |
+| [Optimal Trade Entry](indicators/ote/) | `OTE`, `OTE_ML` | Python v1.1 · MyLang v0.3 experimental | Symmetric-pivot Fibonacci grid with a dynamic 61.8%–78.6% zone |
 
 ## Quick installation
 

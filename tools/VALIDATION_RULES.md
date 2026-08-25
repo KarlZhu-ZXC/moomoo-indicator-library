@@ -37,10 +37,11 @@ Sequence methods such as `series.smma(...)` are allowed; the rule applies to uns
 | `ML105` | Error | Negative literals immediately beside comparison operators caused parser issues |
 | `ML106` | Error | `NDAY` conflicted with a client system/reserved name |
 | `ML107` | Error | `MOD(...)` was rejected by the tested MyLang runtime |
-| `ML201` | Warning | Dynamic `HHV/LLV` periods require real-client compilation/render testing |
 | `ML202` | Warning | An identifier is not assigned in source and may require Parameter Settings |
 | `ML203` | Warning | Estimated drawing calls exceed 50; the ceiling is not yet independently verified for MyLang |
 | `ML204` | Warning | `COUNT(event,0)` compiled but was unreliable as an event-existence gate in client testing |
+
+Client-confirmed supported capabilities include dynamic `HHV/LLV` periods and `CONST()` last-value broadcasting.
 
 ## Commands
 

@@ -21,12 +21,17 @@ class OteMyLangContractTest(unittest.TestCase):
         self.assertIn("HASSHIFT:=SAGE<BARSCOUNT(C);", self.source)
 
     def test_debug_layer_exposes_state(self):
-        self.assertIn("DEBUG:=1;", self.source)
+        self.assertIn("DEBUG:=0;", self.source)
         self.assertIn("OTE waiting for valid HH/LL", self.source)
         self.assertIn("OTE inactive", self.source)
 
     def test_validation_defaults_do_not_hide_first_grid(self):
         self.assertIn("INVALIDATE:=0;", self.source)
+
+    def test_current_grid_uses_const_broadcast(self):
+        self.assertIn("CSAGE:=CONST(SAGE);", self.source)
+        self.assertIn("CF618:=CONST(F618);", self.source)
+        self.assertIn("CVIS:=CACT AND CURRBARSCOUNT<=CSAGE+1;", self.source)
 
 
 if __name__ == "__main__":

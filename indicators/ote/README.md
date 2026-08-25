@@ -28,7 +28,9 @@ Edit the constants at the top of the source to change Pivot Length, grid/fill vi
 ### MyLang experiment boundaries
 
 - The key capability under test is `HHV/LLV` with a dynamic `BARSLAST`-derived period.
-- `DEBUG:=1` is enabled during client validation and draws confirmed pivots, direction shifts, and a right-edge state message. Set it to `0` after fidelity is confirmed.
+- MyLang `CONST()` has been confirmed in the client. v0.3 freezes only the latest Fib values and displays them across the current Shift span, removing historical stair-step grids.
+- MyLang v0.3 also adds fixed right-edge labels for all eight Fibonacci levels.
+- `DEBUG:=0` is now the default. Set it to `1` only when pivot/shift diagnosis is needed.
 - MyLang v0.2 refreshes its current leg on every confirmed structural HH/LL. This is intentionally simpler than the Python edition's direction-state lifecycle.
 - Client testing showed `COUNT(event,0)>0` was not reliable as an event-existence gate, so v0.2 uses `BARSLAST(event)<BARSCOUNT(C)` instead.
 - `INVALIDATE:=0` is the validation default so origin lifecycle cannot suppress an otherwise valid first grid. Re-enable it only after Fib rendering is confirmed.
@@ -92,7 +94,7 @@ Because the expansion endpoint follows new extremes, the grid and OTE zone inten
 | Previous historical Fib objects | Not included in v1.0; current grid only |
 | Price labels beyond the final bar | Not available in the tested runtime |
 
-The comparison table describes the Python edition. The MyLang edition is intentionally experimental and visually simpler.
+The Python edition now uses symmetric confirmed pivots (`N` bars on both sides), rather than the LuxAlgo alternating-pivot engine used by the SMC collection. The MyLang edition remains experimental but uses the same symmetric pivot definition.
 
 ## Trading-process boundary
 
