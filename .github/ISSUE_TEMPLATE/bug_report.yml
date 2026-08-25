@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a compiler, rendering, or source-alignment issue
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options: [SMC_STR, SMC_OB, SMC_IMB]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: moomoo version and OS
+      placeholder: "Desktop version; macOS or Windows version"
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: First complete error or observed difference
+      description: Include the full first error, or explain the expected and actual chart behavior.
+    validations:
+      required: true
+  - type: input
+    id: chart
+    attributes:
+      label: Symbol and timeframe
+      placeholder: "QCOM, 1D"
+  - type: textarea
+    id: params
+    attributes:
+      label: Non-default parameters
+  - type: checkboxes
+    id: license
+    attributes:
+      label: Checklist
+      options:
+        - label: I understand this project is unofficial and intended for non-commercial use.
+          required: true

@@ -1,0 +1,6 @@
+*.md text eol=lf whitespace=-trailing-space,-blank-at-eof
+*.py text eol=lf
+*.yml text eol=lf
+*.pdf binary
+*.docx binary
+*.png binary
