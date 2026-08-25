@@ -28,6 +28,7 @@ Edit the constants at the top of the source to change Pivot Length, grid/fill vi
 ### MyLang experiment boundaries
 
 - The key capability under test is `HHV/LLV` with a dynamic `BARSLAST`-derived period.
+- `DEBUG:=1` is enabled during client validation and draws confirmed pivots, direction shifts, and a right-edge state message. Set it to `0` after fidelity is confirmed.
 - MyLang draws evolving series rather than Pine-style dynamic horizontal objects, so levels may show their movement as the trend stretches.
 - Six-digit colors are used because client testing rejected `COLORRRGGBBAA`.
 - `SHOWFILL` defaults to `0`; enable it only if the pastel solid fill does not obscure candles.
@@ -40,6 +41,13 @@ Edit the constants at the top of the source to change Pivot Length, grid/fill vi
 3. If it passes, load `OTE` and `OTE_ML` on the same symbol and timeframe.
 4. Compare direction, origin, 0.618/0.705/0.786 values, and behavior after a new trend extreme.
 5. Test an origin break and confirm the old grid is hidden when `INVALIDATE:=1`.
+
+Debug interpretation:
+
+- no `PH`/`PL`: pivot detection is the blocker;
+- pivots but no `UP SHIFT`/`DN SHIFT`: HH/LL direction logic is the blocker;
+- `OTE waiting for HH/LL`: no valid direction shift exists in loaded history;
+- `OTE inactive`: a shift exists, but the range is empty or the origin was invalidated.
 
 Do not judge fidelity from screenshots with different Pivot Lengths or chart histories.
 
