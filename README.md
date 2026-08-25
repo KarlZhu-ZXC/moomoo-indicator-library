@@ -1,7 +1,7 @@
 # moomoo Smart Money Suite
 
 <p align="center">
-  <strong>面向 moomoo Python 自定义指标的 Smart Money Concepts 三模块套件</strong><br>
+  <strong>A three-module Smart Money Concepts indicator suite for the moomoo Python custom-indicator runtime</strong><br>
   Structure · Order Blocks · Fair Value Gaps · Premium / Discount
 </p>
 
@@ -13,44 +13,46 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/fig1_structure.png" alt="Market structure, BOS and CHoCH diagram" width="900">
+  <img src="docs/assets/fig1_structure.png" alt="Market structure, BOS, and CHoCH diagram" width="900">
 </p>
 
 > [!IMPORTANT]
-> 本项目是非官方、非商业的跨平台适配。算法参考 LuxAlgo 的开源 Pine Script，并针对 moomoo 的序列 API 和每指标 50 个 plot 调用上限进行了重构。它不是 LuxAlgo 官方产品，也不承诺与 TradingView 像素级一致。
+> This is an unofficial, non-commercial cross-platform adaptation. Its algorithms reference LuxAlgo's open-source Pine Script and have been reworked for moomoo's sequence API and client-observed limit of 50 static `plot*()` calls per indicator. This is not a LuxAlgo product and does not claim pixel-perfect parity with TradingView.
 
-## 为什么拆成三个指标
+## Why three indicators?
 
-moomoo 自定义指标目前对单个脚本设置了静态绘图调用上限。将完整 SMC 拆为三个可叠加模块，既保留主要功能，也让每个模块的职责、参数和绘图预算清晰可控。
+In the tested moomoo Desktop Python custom-indicator compiler, a script containing more than 50 static `plot*()` calls is rejected. This is a client-observed constraint rather than a limit documented on moomoo's public website, and it may change in future releases.
 
-| 指标 | 功能 | 静态绘图预算 |
+Splitting the complete SMC system into three stackable modules preserves the main features while keeping responsibilities, settings, and plot budgets explicit.
+
+| Indicator | Features | Static plot budget |
 |---|---|---:|
-| `SMC_STR` | Internal/Swing Structure、BOS、CHoCH、HH/HL/LH/LL、EQH/EQL、Strong/Weak、趋势染色 | 28 / 50 |
-| `SMC_OB` | Internal/Swing Order Blocks、波动过滤、mitigation、`iOB`/`sOB` 标签 | 50 / 50 |
-| `SMC_IMB` | 当前图表周期 FVG、Auto Threshold、Premium/Equilibrium/Discount、FVG 标签 | 46 / 50 |
+| `SMC_STR` | Internal/swing structure, BOS, CHoCH, HH/HL/LH/LL, EQH/EQL, Strong/Weak levels, candle coloring | 28 / 50 |
+| `SMC_OB` | Internal/swing order blocks, volatility filtering, mitigation, `iOB`/`sOB` labels | 50 / 50 |
+| `SMC_IMB` | Current-chart-timeframe FVGs, auto threshold, Premium/Equilibrium/Discount, FVG labels | 46 / 50 |
 
-## 快速安装
+## Quick installation
 
-1. 打开 moomoo 桌面端的自定义指标管理器。
-2. 新建 **Python 主图指标**，分别复制以下文件的完整内容：
+1. Open the custom indicator manager in moomoo Desktop.
+2. Create three new **Python overlay indicators** and paste the complete contents of:
    - [`indicators/SMC_STR.py`](indicators/SMC_STR.py)
    - [`indicators/SMC_OB.py`](indicators/SMC_OB.py)
    - [`indicators/SMC_IMB.py`](indicators/SMC_IMB.py)
-3. 指标名称分别使用 `SMC_STR`、`SMC_OB`、`SMC_IMB`。
-4. 将三者叠加到同一张 K 线主图；建议先逐个加载和验证，再组合使用。
+3. Name the indicators `SMC_STR`, `SMC_OB`, and `SMC_IMB` respectively.
+4. Add all three to the same candlestick chart. Test them individually before using the combined layout.
 
 > [!TIP]
-> 首次测试可用 QCOM 或 TTWO 日线。先验证 Structure 的线段起止位置，再加载 OB，最后打开 FVG 与 Premium/Discount Zones。
+> For the first validation, use a QCOM or TTWO daily chart. Check the Structure segment endpoints first, load Order Blocks second, and then enable FVGs and Premium/Discount Zones.
 
-## v3.2 亮点
+## What's new in v3.2
 
-- BOS、CHoCH、EQH/EQL、Strong/Weak 标签使用 ATR(200) 自适应间距，减少压线。
-- Order Block 增加 `iOB` / `sOB` 标签，并保留 active block 与 mitigation 语义。
-- FVG 增加方向着色标签；在 50 plot 限制内支持最多 20 个区域与 20 个标签。
-- Structure 线段使用独立 stickline 图元，避免不同事件被 `plot()` 自动连接成斜线。
-- 附带完整中文 SMC 手册、可编辑 Word 版、PDF 版与原创示意图。
+- ATR(200)-adaptive spacing for BOS, CHoCH, EQH/EQL, and Strong/Weak labels reduces line and candle overlap.
+- Active order blocks now include `iOB` and `sOB` labels while preserving mitigation behavior.
+- FVGs include direction-colored labels, with support for up to 20 active zones and 20 labels within the plot budget.
+- Structure segments use independent stickline primitives to prevent `plot()` from joining separate events with diagonal lines.
+- The repository includes a complete Chinese SMC handbook in Markdown, PDF, and editable Word formats, plus four original diagrams.
 
-## 视觉导览
+## Visual guide
 
 | Liquidity · EQH/EQL | Order Blocks · FVG |
 |---|---|
@@ -58,11 +60,11 @@ moomoo 自定义指标目前对单个脚本设置了静态绘图调用上限。�
 
 | Premium · Equilibrium · Discount |
 |---|
-| ![Premium, equilibrium and discount zones](docs/assets/fig4_zones.png) |
+| ![Premium, equilibrium, and discount zones](docs/assets/fig4_zones.png) |
 
-## 推荐参数与排查
+## Suggested settings and troubleshooting
 
-Structure 标签仍拥挤时，可逐步提高以下 ATR 倍数；这些设置只移动文字，不改变事件或价位：
+If Structure labels remain crowded, gradually increase the following ATR multiples. These settings move text only; they do not change event dates or price levels.
 
 ```text
 Internal Label Gap ATR = 0.45
@@ -70,43 +72,42 @@ Swing Label Gap ATR    = 0.55
 EQ Label Gap ATR       = 0.45
 ```
 
-完整参数说明、术语解释、交易工作流与风险管理见：
+For full parameter descriptions, terminology, trading workflows, and risk management, see:
 
-- [Smart Money Concepts 中文实战手册（Markdown）](docs/Smart_Money_Concepts_实战手册_CN.md)
-- [PDF 版](docs/Smart_Money_Concepts_实战手册_CN.pdf)
-- [Word 可编辑版](docs/Smart_Money_Concepts_实战手册_CN.docx)
-- [v3.2 详细变更说明](docs/README_V3_2_CN.md)
+- [Chinese Smart Money Concepts handbook — Markdown](docs/Smart_Money_Concepts_实战手册_CN.md)
+- [Chinese handbook — PDF](docs/Smart_Money_Concepts_实战手册_CN.pdf)
+- [Chinese handbook — editable Word](docs/Smart_Money_Concepts_实战手册_CN.docx)
+- [Detailed v3.2 notes in Chinese](docs/README_V3_2_CN.md)
 
-## 与 TradingView 原版的边界
+## Differences from the TradingView original
 
-本项目尽量对齐结构状态、pivot、BOS/CHoCH、OB、FVG、EQH/EQL 与价值区域的核心算法，但以下差异来自平台能力：
+The project aims to align the core state, pivot, BOS/CHoCH, order-block, FVG, EQH/EQL, and value-zone algorithms. Some differences are unavoidable because of platform capabilities:
 
-- moomoo 使用静态序列绘图，无法等价复现 Pine 的动态 `line`、`label`、`box` 对象管理。
-- FVG 仅支持当前图表周期；客户端已验证的 Python runtime 不提供任意 `request.security()` 周期。
-- Previous Day/Week/Month High-Low 未纳入当前三模块。
-- 历史扫描显式限制为 500 bars，以匹配可用运行时与绘图预算。
-- 真实 moomoo 客户端仍是最终编译和渲染标准。
+- moomoo uses static sequence rendering and cannot reproduce Pine's dynamic `line`, `label`, and `box` object management exactly.
+- FVG detection supports the current chart timeframe only; the client-confirmed Python runtime does not expose an arbitrary equivalent of Pine's `request.security()`.
+- Previous Day/Week/Month High-Low levels are not included in the current three modules.
+- Historical state scans are explicitly capped at 500 bars to fit the available runtime and rendering model.
+- The moomoo Desktop client remains the authoritative compiler and renderer.
 
-详见 [兼容性说明](docs/COMPATIBILITY.md)。
+See the full [compatibility matrix](docs/COMPATIBILITY.md).
 
-## LuxAlgo 参考与署名
+## LuxAlgo reference and attribution
 
-本项目是对以下开源作品的适配与修改：
+This repository adapts and modifies the following open-source work:
 
-- 原作品：**Smart Money Concepts (SMC) [LuxAlgo]**，© LuxAlgo
-- 官方页面：[TradingView 开源脚本](https://www.tradingview.com/script/CnB3fSph-Smart-Money-Concepts-SMC-LuxAlgo/)
-- 固定参考源码：[Pine v5 mirror @ `31756c8615aff4cefe9cf97350e78bd427f663cd`](https://github.com/deepentropy/lightweight-charts-indicators/blob/31756c8615aff4cefe9cf97350e78bd427f663cd/docs/official/indicators_community/Smart%20Money%20Concepts%20%28SMC%29%20%5BLuxAlgo%5D.pine)
-- 原作品及本适配采用：[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+- Original work: **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo
+- Official publication: [TradingView open-source script](https://www.tradingview.com/script/CnB3fSph-Smart-Money-Concepts-SMC-LuxAlgo/)
+- Pinned source baseline: [Pine v5 mirror at `31756c8615aff4cefe9cf97350e78bd427f663cd`](https://github.com/deepentropy/lightweight-charts-indicators/blob/31756c8615aff4cefe9cf97350e78bd427f663cd/docs/official/indicators_community/Smart%20Money%20Concepts%20%28SMC%29%20%5BLuxAlgo%5D.pine)
+- Original and adapted-work license: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-主要修改包括：Pine v5 到 moomoo Python/`ftool` 的语言迁移、按平台绘图上限拆分模块、静态序列状态重建、线段绘制替代、标签间距与 OB/FVG 标签增强。完整说明见 [NOTICE.md](NOTICE.md)。
+Material changes include the Pine v5 to moomoo Python/`ftool` port, the three-module architecture, static sequence-state reconstruction, platform-specific segment rendering, adaptive label spacing, and additional OB/FVG labels. See [NOTICE.md](NOTICE.md) for the complete attribution and modification notice.
 
-LuxAlgo、TradingView、moomoo 与 Futu 相关名称和商标归各自权利人所有。本仓库与这些主体均无附属、认可或合作关系。
+LuxAlgo, TradingView, moomoo, and Futu names and trademarks belong to their respective owners. This repository is not affiliated with, endorsed by, or sponsored by any of them.
 
-## 风险提示
+## Risk disclosure
 
-SMC 指标不能直接识别银行、基金或机构账户的真实订单。它只是使用公开 OHLC 数据组织市场结构、流动性与价格失衡的观察框架。所有内容仅供学习、研究与技术验证，不构成投资建议；历史表现不代表未来结果。
+SMC indicators cannot directly identify the real orders of banks, funds, or institutional accounts. They use public OHLC data to organize observations about market structure, liquidity, and price imbalance. Everything in this repository is provided for education, research, and technical validation only. It is not investment advice, and past performance does not guarantee future results.
 
 ## License
 
-在原作品许可证要求下，本项目以 **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International** 发布。你必须保留署名、仅作非商业使用，并以相同许可证分享改编版本。参见 [LICENSE](LICENSE) 与 [NOTICE.md](NOTICE.md)。
-
+Under the terms of the original work, this adaptation is released under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International** license. You must preserve attribution, use the material only for non-commercial purposes, and distribute adaptations under the same license. See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
