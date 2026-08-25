@@ -15,6 +15,7 @@ ASSIGNMENT = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*)\s*:(?:=|(?!=))", re.MULTIL
 FUNCTION_CALL = re.compile(r"\b([A-Za-z][A-Za-z0-9_]*)\s*\(")
 IDENTIFIER = re.compile(r"\b[A-Za-z][A-Za-z0-9_]*\b")
 DYNAMIC_WINDOW = re.compile(r"\b(?:HHV|LLV)\s*\(\s*[^,]+,\s*([A-Za-z][A-Za-z0-9_]*)\s*\)", re.IGNORECASE)
+COUNT_ZERO = re.compile(r"\bCOUNT\s*\([^,]+,\s*0\s*\)", re.IGNORECASE)
 
 RESERVED_ASSIGNMENTS = {"NDAY"}
 UNSUPPORTED_FUNCTIONS = {"MOD"}
@@ -116,6 +117,14 @@ def validate_mylang(path: Path) -> ValidationResult:
             "ML201",
             "WARNING",
             f"dynamic HHV/LLV period '{name}' requires real moomoo client validation",
+        )
+
+    if COUNT_ZERO.search(code):
+        result.add(
+            0,
+            "ML204",
+            "WARNING",
+            "COUNT(event,0) compiled but was unreliable as an event-existence gate; prefer BARSLAST(event)<BARSCOUNT(C)",
         )
 
     known = assigned | functions | KEYWORDS | BUILTIN_SERIES | STYLE_WORDS

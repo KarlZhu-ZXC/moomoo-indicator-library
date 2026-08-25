@@ -10,11 +10,15 @@ class OteMyLangContractTest(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         cls.source = (root / "indicators" / "ote" / "OTE.mylang").read_text(encoding="utf-8")
 
-    def test_direction_shifts_require_opposite_pivot(self):
-        self.assertIn("VALIDUP:=HH0 AND HASPL;", self.source)
-        self.assertIn("VALIDDN:=LL0 AND HASPH;", self.source)
+    def test_direction_shifts_use_confirmed_hh_ll(self):
+        self.assertIn("VALIDUP:=HH0;", self.source)
+        self.assertIn("VALIDDN:=LL0;", self.source)
         self.assertIn("UPSHIFT:=VALIDUP;", self.source)
         self.assertIn("DNSHIFT:=VALIDDN;", self.source)
+
+    def test_shift_existence_does_not_use_count_zero(self):
+        self.assertNotIn("COUNT(SHIFT0,0)", self.source)
+        self.assertIn("HASSHIFT:=SAGE<BARSCOUNT(C);", self.source)
 
     def test_debug_layer_exposes_state(self):
         self.assertIn("DEBUG:=1;", self.source)

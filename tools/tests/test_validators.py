@@ -62,6 +62,10 @@ class ValidatorTestCase(unittest.TestCase):
         path = self.temporary_file(".mylang", "A:=EXTERNAL+1;\n")
         self.assertIn("ML202", self.rules(validate_mylang(path)))
 
+    def test_mylang_count_zero_warning(self):
+        path = self.temporary_file(".mylang", "A:=COUNT(X,0)>0;\n")
+        self.assertIn("ML204", self.rules(validate_mylang(path)))
+
     def test_mylang_multiline_comment_does_not_affect_parentheses(self):
         path = self.temporary_file(".mylang", "{ comment with (\ncontinued ) }\nA:=1;\n")
         self.assertNotIn("ML102", self.rules(validate_mylang(path)))

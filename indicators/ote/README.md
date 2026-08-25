@@ -29,7 +29,8 @@ Edit the constants at the top of the source to change Pivot Length, grid/fill vi
 
 - The key capability under test is `HHV/LLV` with a dynamic `BARSLAST`-derived period.
 - `DEBUG:=1` is enabled during client validation and draws confirmed pivots, direction shifts, and a right-edge state message. Set it to `0` after fidelity is confirmed.
-- MyLang v0.2 refreshes its current leg on every valid structural HH/LL. This is intentionally simpler than the Python edition's direction-state lifecycle.
+- MyLang v0.2 refreshes its current leg on every confirmed structural HH/LL. This is intentionally simpler than the Python edition's direction-state lifecycle.
+- Client testing showed `COUNT(event,0)>0` was not reliable as an event-existence gate, so v0.2 uses `BARSLAST(event)<BARSCOUNT(C)` instead.
 - `INVALIDATE:=0` is the validation default so origin lifecycle cannot suppress an otherwise valid first grid. Re-enable it only after Fib rendering is confirmed.
 - MyLang draws evolving series rather than Pine-style dynamic horizontal objects, so levels may show their movement as the trend stretches.
 - Six-digit colors are used because client testing rejected `COLORRRGGBBAA`.
@@ -48,7 +49,7 @@ Debug interpretation:
 
 - no `PH`/`PL`: pivot detection is the blocker;
 - `PH`/`PL` but no `HH`/`LL`: previous-pivot comparison is the blocker;
-- `HH`/`LL` but no `UP SHIFT`/`DN SHIFT`: opposite-pivot validation is the blocker;
+- `HH`/`LL` but no `UP SHIFT`/`DN SHIFT`: direct shift rendering is the blocker;
 - `OTE waiting for HH/LL`: no valid direction shift exists in loaded history;
 - `OTE inactive`: a shift exists, but the range is empty or the origin was invalidated.
 
