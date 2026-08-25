@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Added an experimental standalone MyLang edition of OTE as `OTE_ML`.
-- Added MyLang preflight checks for semicolons, balanced parentheses, drawing-call estimates, and unsupported 8-digit colors.
+- Split moomoo environment validation into dedicated Python and MyLang validators.
+- Added regression tests and a documented rule catalog for client-specific parser, runtime, color, naming, scope, and drawing constraints.
 
 ## Library 4.0 — 2026-08-25
 

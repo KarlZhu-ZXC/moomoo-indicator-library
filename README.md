@@ -103,8 +103,11 @@ The 50-call ceiling is client-observed rather than a limit published on moomoo's
 Run all repository checks with:
 
 ```bash
+python -m unittest discover -s tools/tests
 python tools/validate.py
 ```
+
+Python and MyLang rules are maintained separately. See the [moomoo environment validation catalog](tools/VALIDATION_RULES.md).
 
 ## Repository layout
 

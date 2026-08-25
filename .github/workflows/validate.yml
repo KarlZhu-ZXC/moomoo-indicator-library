@@ -17,5 +17,7 @@ jobs:
           python-version: "3.13"
       - name: Compile Python syntax
         run: python -m compileall -q indicators
-      - name: Check moomoo plot constraints
+      - name: Test validator rules
+        run: python -m unittest discover -s tools/tests
+      - name: Check moomoo environment constraints
         run: python tools/validate.py

@@ -1,111 +1,55 @@
 #!/usr/bin/env python3
-"""Static checks for moomoo Python and MyLang custom indicators."""
+"""Run moomoo-specific Python and MyLang indicator validation."""
 
 from __future__ import annotations
 
-import ast
-import re
+import argparse
 import sys
 from pathlib import Path
 
-
-PLOT_NAMES = {"plot", "plot_bar", "plot_candle", "plot_fillcolor", "plot_icon", "plot_stickline", "plot_text"}
-MYLANG_DRAW = re.compile(r"\b(?:DRAWLINE|DRAWTEXT|DRAWICON|DRAWNUMBER|STICKLINE|FILLRGN)\s*\(", re.IGNORECASE)
-MYLANG_OUTPUT = re.compile(r"^\s*[A-Za-z][A-Za-z0-9_]*\s*:(?!=)", re.MULTILINE)
-MYLANG_RGBA = re.compile(r"\bCOLOR[0-9A-Fa-f]{8}\b")
-MYLANG_PREFIX_NOT = re.compile(r"\bNOT\s+[A-Za-z][A-Za-z0-9_]*", re.IGNORECASE)
-MYLANG_NEGATIVE_COMPARE = re.compile(r"(?:=|<>)-\d")
+from validators import ValidationResult, validate_mylang, validate_python
 
 
-def call_name(node: ast.Call) -> str:
-    if isinstance(node.func, ast.Name):
-        return node.func.id
-    if isinstance(node.func, ast.Attribute):
-        return node.func.attr
-    return ""
+def discover(root: Path, requested: list[str]) -> list[Path]:
+    if requested:
+        return [Path(item).resolve() for item in requested]
+    return sorted((root / "indicators").rglob("*.py")) + sorted((root / "indicators").rglob("*.mylang"))
 
 
-def validate(path: Path) -> list[str]:
-    errors: list[str] = []
-    source = path.read_text(encoding="utf-8")
-    tree = ast.parse(source, filename=str(path))
-    parent: dict[ast.AST, ast.AST] = {}
-    for node in ast.walk(tree):
-        for child in ast.iter_child_nodes(node):
-            parent[child] = node
-
-    plots: list[ast.Call] = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call) or call_name(node) not in PLOT_NAMES:
-            continue
-        plots.append(node)
-
-        current: ast.AST | None = node
-        while current in parent:
-            current = parent[current]
-            if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
-                errors.append(f"{path}:{node.lineno}: plot call is inside a local scope")
-                break
-
-        if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
-            if len(node.args[0].value) > 25:
-                errors.append(f"{path}:{node.lineno}: plot name exceeds 25 characters")
-
-        if call_name(node) == "plot_stickline" and len(node.args) != 9:
-            errors.append(f"{path}:{node.lineno}: plot_stickline must have 9 positional arguments")
-
-    if len(plots) > 50:
-        errors.append(f"{path}: {len(plots)} plot calls exceeds the 50-call limit")
-
-    repository_root = Path(__file__).resolve().parents[1]
-    print(f"{path.relative_to(repository_root)}: syntax PASS; plots {len(plots)}/50")
-    return errors
-
-
-def validate_mylang(path: Path) -> list[str]:
-    """Parser-independent preflight checks; the moomoo client is authoritative."""
-    errors: list[str] = []
-    source = path.read_text(encoding="utf-8")
-    code_lines = []
-    for line_number, line in enumerate(source.splitlines(), 1):
-        stripped = line.strip()
-        if not stripped or (stripped.startswith("{") and stripped.endswith("}")):
-            continue
-        code_lines.append((line_number, stripped))
-        if not stripped.endswith(";"):
-            errors.append(f"{path}:{line_number}: MyLang statement must end with semicolon")
-
-    code_only = "\n".join(line for _, line in code_lines)
-
-    if source.count("(") != source.count(")"):
-        errors.append(f"{path}: unbalanced parentheses")
-    if MYLANG_RGBA.search(code_only):
-        errors.append(f"{path}: 8-digit COLORRRGGBBAA is rejected by the tested MyLang client")
-    if MYLANG_PREFIX_NOT.search(code_only):
-        errors.append(f"{path}: tested MyLang parser rejects prefix NOT in compound expressions; compare with zero")
-    if MYLANG_NEGATIVE_COMPARE.search(code_only):
-        errors.append(f"{path}: avoid unary negative literals beside comparison operators in tested MyLang parser")
-
-    draw_calls = len(MYLANG_DRAW.findall(source)) + len(MYLANG_OUTPUT.findall(source))
-    if draw_calls > 50:
-        errors.append(f"{path}: {draw_calls} estimated drawing calls exceeds the observed 50-call ceiling")
-
-    repository_root = Path(__file__).resolve().parents[1]
-    print(f"{path.relative_to(repository_root)}: MyLang PRECHECK; estimated draws {draw_calls}/50")
-    return errors
+def validate_path(path: Path) -> ValidationResult:
+    if path.suffix == ".py":
+        return validate_python(path)
+    if path.suffix == ".mylang":
+        return validate_mylang(path)
+    raise ValueError(f"unsupported indicator language: {path}")
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("paths", nargs="*", help="Optional .py or .mylang files; defaults to indicators/**")
+    parser.add_argument("--strict-warnings", action="store_true", help="Treat environment warnings as failures")
+    args = parser.parse_args()
+
     root = Path(__file__).resolve().parents[1]
-    errors: list[str] = []
-    for path in sorted((root / "indicators").rglob("*.py")):
-        errors.extend(validate(path))
-    for path in sorted((root / "indicators").rglob("*.mylang")):
-        errors.extend(validate_mylang(path))
-    if errors:
-        print("\n".join(errors), file=sys.stderr)
+    results = [validate_path(path) for path in discover(root, args.paths)]
+    errors = 0
+    warnings = 0
+
+    for result in results:
+        try:
+            shown = result.path.relative_to(root)
+        except ValueError:
+            shown = result.path
+        budget = f"; estimated draws {result.draw_calls}/50" if result.language == "MyLang" else f"; plots {result.draw_calls}/50"
+        print(f"{shown}: {result.language} PRECHECK{budget}")
+        for finding in result.findings:
+            print(finding.render(root))
+        errors += len(result.errors)
+        warnings += len(result.warnings)
+
+    print(f"Validation complete: {len(results)} files, {errors} errors, {warnings} warnings.")
+    if errors or (args.strict_warnings and warnings):
         return 1
-    print("All static checks passed.")
     return 0
 
 
