@@ -17,6 +17,32 @@ The indicator uses confirmed alternating pivots. With `Pivot Length = 5`, a pivo
 
 Create a new Python overlay indicator named `OTE` in moomoo Desktop and paste the complete contents of [`OTE.py`](OTE.py).
 
+An experimental MyLang edition is also available as [`OTE.mylang`](OTE.mylang). Create a MyLang main-chart indicator with:
+
+- abbreviation: `OTE_ML`
+- full name: `Smart Money Fib OTE MyLang`
+- no Parameter Settings entries required
+
+Edit the constants at the top of the source to change Pivot Length, grid/fill visibility, invalidation, or Fibonacci ratios.
+
+### MyLang experiment boundaries
+
+- The key capability under test is `HHV/LLV` with a dynamic `BARSLAST`-derived period.
+- MyLang draws evolving series rather than Pine-style dynamic horizontal objects, so levels may show their movement as the trend stretches.
+- Six-digit colors are used because client testing rejected `COLORRRGGBBAA`.
+- `SHOWFILL` defaults to `0`; enable it only if the pastel solid fill does not obscure candles.
+- The moomoo client compiler and chart are the final validation. Repository checks are only a parser-independent preflight.
+
+### First client test
+
+1. Keep `SHOWFILL:=0` and compile the script unchanged.
+2. If compilation fails, capture the first complete error and line number.
+3. If it passes, load `OTE` and `OTE_ML` on the same symbol and timeframe.
+4. Compare direction, origin, 0.618/0.705/0.786 values, and behavior after a new trend extreme.
+5. Test an origin break and confirm the old grid is hidden when `INVALIDATE:=1`.
+
+Do not judge fidelity from screenshots with different Pivot Lengths or chart histories.
+
 ## Default parameters
 
 | Parameter | Default | Meaning |
@@ -53,6 +79,8 @@ Because the expansion endpoint follows new extremes, the grid and OTE zone inten
 | Swing diagonal between anchors | Not included; moomoo has no equivalent dynamic line object |
 | Previous historical Fib objects | Not included in v1.0; current grid only |
 | Price labels beyond the final bar | Not available in the tested runtime |
+
+The comparison table describes the Python edition. The MyLang edition is intentionally experimental and visually simpler.
 
 ## Trading-process boundary
 

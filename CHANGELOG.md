@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added an experimental standalone MyLang edition of OTE as `OTE_ML`.
+- Added MyLang preflight checks for semicolons, balanced parentheses, drawing-call estimates, and unsupported 8-digit colors.
+
 ## Library 4.0 — 2026-08-25
 
 - Reorganized the repository as the moomoo Indicator Library.
