@@ -16,6 +16,6 @@ jobs:
         with:
           python-version: "3.13"
       - name: Compile Python syntax
-        run: python -m py_compile indicators/*.py
+        run: python -m compileall -q indicators
       - name: Check moomoo plot constraints
         run: python tools/validate.py

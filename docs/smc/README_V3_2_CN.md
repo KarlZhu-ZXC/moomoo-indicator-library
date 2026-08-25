@@ -15,7 +15,7 @@
 - `Smart_Money_Concepts_实战手册_CN.pdf`：适合直接阅读、打印。
 - `Smart_Money_Concepts_实战手册_CN.docx`：可编辑版本。
 - `Smart_Money_Concepts_实战手册_CN.md`：纯文本 Markdown 版本。
-- `figures/`：手册中的原创示意图。
+- `assets/`：手册中的原创示意图。
 
 ## 1. SMC_STR 标签间距
 

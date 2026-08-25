@@ -121,7 +121,7 @@ SMC 指标真正能做的是：
 
 # 3. 市场结构基础：HH、HL、LH、LL
 
-![市场结构示意图](figures/fig1_structure.png)
+![市场结构示意图](assets/fig1_structure.png)
 
 ## 3.1 四个基础摆动点
 
@@ -280,7 +280,7 @@ LuxAlgo 会从最近确认的 swing pivot 开始维护 trailing top 和 trailing
 
 # 7. EQH / EQL 与流动性池
 
-![EQH/EQL 与流动性](figures/fig2_liquidity.png)
+![EQH/EQL 与流动性](assets/fig2_liquidity.png)
 
 ## 7.1 定义
 
@@ -321,7 +321,7 @@ LuxAlgo 默认：
 
 # 8. Order Block
 
-![Order Block 与 FVG](figures/fig3_ob_fvg.png)
+![Order Block 与 FVG](assets/fig3_ob_fvg.png)
 
 ## 8.1 SMC 中的常见解释
 
@@ -426,7 +426,7 @@ LuxAlgo：
 
 # 10. Premium、Equilibrium、Discount
 
-![Premium / Discount](figures/fig4_zones.png)
+![Premium / Discount](assets/fig4_zones.png)
 
 这三个区域来自当前 trailing swing range：
 
