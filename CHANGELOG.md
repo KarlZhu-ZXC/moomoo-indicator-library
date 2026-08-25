@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Added an experimental standalone MyLang edition of OTE as `OTE_ML`.
+- Split moomoo environment validation into dedicated Python and MyLang validators.
+- Added regression tests and a documented rule catalog for client-specific parser, runtime, color, naming, scope, and drawing constraints.
+- Guarded OTE direction shifts until an opposite pivot exists and added an opt-out debug layer for no-output diagnosis.
+- Simplified MyLang OTE v0.2 to refresh on every valid structural HH/LL and disabled origin invalidation during visual validation.
+- Removed `COUNT(event,0)` state gates after client testing showed pivots/HH/LL without shift activation; added validator rule `ML204`.
+- Confirmed MyLang `CONST()` behavior and updated OTE v0.3 to render only the latest fixed horizontal grid.
+- Changed Python OTE to symmetric confirmed pivots and added right-edge Fibonacci level labels.
+
 ## Library 4.0 — 2026-08-25
 
 - Reorganized the repository as the moomoo Indicator Library.

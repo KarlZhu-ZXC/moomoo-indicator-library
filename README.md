@@ -20,7 +20,7 @@
 | Collection | Indicators | Status | Description |
 |---|---|---|---|
 | [Smart Money Concepts](indicators/smc/) | `SMC_STR`, `SMC_OB`, `SMC_IMB` | Stable · v3.2 | Structure, BOS/CHoCH, Order Blocks, FVGs, EQH/EQL, and value zones |
-| [Optimal Trade Entry](indicators/ote/) | `OTE` | New · v1.0 | HH/LL direction-shift Fibonacci grid with a dynamic 61.8%–78.6% zone |
+| [Optimal Trade Entry](indicators/ote/) | `OTE`, `OTE_ML` | Python v1.1 · MyLang v0.3 experimental | Symmetric-pivot Fibonacci grid with a dynamic 61.8%–78.6% zone |
 
 ## Quick installation
 
@@ -32,11 +32,12 @@
 | Short name | File |
 |---|---|
 | `OTE` | [`indicators/ote/OTE.py`](indicators/ote/OTE.py) |
+| `OTE_ML` | [`indicators/ote/OTE.mylang`](indicators/ote/OTE.mylang) |
 | `SMC_STR` | [`indicators/smc/SMC_STR.py`](indicators/smc/SMC_STR.py) |
 | `SMC_OB` | [`indicators/smc/SMC_OB.py`](indicators/smc/SMC_OB.py) |
 | `SMC_IMB` | [`indicators/smc/SMC_IMB.py`](indicators/smc/SMC_IMB.py) |
 
-Each file is standalone. OTE is deliberately separate from SMC and does not consume any SMC module's plot budget or state.
+Each file is standalone. OTE is deliberately separate from SMC and does not consume any SMC module's plot budget or state. `OTE.py` is the canonical edition; `OTE.mylang` is an experimental compatibility port for client testing.
 
 ## Optimal Trade Entry
 
@@ -102,8 +103,11 @@ The 50-call ceiling is client-observed rather than a limit published on moomoo's
 Run all repository checks with:
 
 ```bash
+python -m unittest discover -s tools/tests
 python tools/validate.py
 ```
+
+Python and MyLang rules are maintained separately. See the [moomoo environment validation catalog](tools/VALIDATION_RULES.md).
 
 ## Repository layout
 
@@ -111,6 +115,7 @@ python tools/validate.py
 indicators/
 ├── ote/
 │   ├── OTE.py
+│   ├── OTE.mylang
 │   └── README.md
 └── smc/
     ├── SMC_STR.py

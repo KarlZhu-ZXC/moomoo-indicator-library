@@ -1,0 +1,14 @@
+{ MyLang CONST capability probe }
+{ Abbreviation: CONST_T }
+{ Full name: MyLang CONST Probe }
+{ Object: main chart / overlay }
+{ Expected: red dotted line evolves; green solid line is horizontal for 20 bars. }
+
+N:=20;
+RAW0:=HHV(H,N);
+FIX0:=CONST(RAW0);
+VIS0:=CURRBARSCOUNT<=N;
+
+RAWLINE:IF(VIS0,RAW0,DRAWNULL),DOTLINE,COLORF23645;
+FIXLINE:IF(VIS0,FIX0,DRAWNULL),LINETHICK2,COLOR089981;
+DRAWTEXT(ISLASTBAR,FIX0,'CONST'),COLOR089981;

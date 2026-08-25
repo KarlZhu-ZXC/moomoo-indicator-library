@@ -1,4 +1,4 @@
-# Smart Money Fibonacci OTE — standalone moomoo Python indicator v1.0
+# Smart Money Fibonacci OTE — standalone moomoo Python indicator v1.1
 #
 # Independent implementation informed by the published behavior of ChartPrime's
 # open-source Smart Money Fibonacci OTE Engine.  No third-party Pine source code
@@ -29,6 +29,8 @@ show_zone = input_parameter("Show OTE Zone", True)
 show_ote_levels = input_parameter("Show OTE Levels", True)
 show_full_grid = input_parameter("Show Full Fib Grid", True)
 show_labels = input_parameter("Show OTE Labels", True)
+show_fib_labels = input_parameter("Show Fib Labels", True)
+fib_label_size = input_parameter("Fib Label Size 1-3", 1)
 invalidate_origin = input_parameter("Invalidate Origin Break", True)
 monochrome = input_parameter("Style: Monochrome", False)
 
@@ -69,16 +71,11 @@ def _broadcast_last_bool(cond):
 
 
 def _swing_state(length):
-    """Confirmed alternating pivots using the suite's source-aligned engine."""
-    high_candidate = ref(h, length) > h.hhv(length)
-    low_candidate = (ref(l, length) < l.llv(length)) & (~high_candidate)
-    prev_high_age = replace_na(ref(bars_last(high_candidate), 1), _BIG)
-    prev_low_age = replace_na(ref(bars_last(low_candidate), 1), _BIG)
-    previous_leg_is_bearish = prev_high_age <= prev_low_age
-    top_confirm = high_candidate & (~previous_leg_is_bearish)
-    bottom_confirm = low_candidate & previous_leg_is_bearish
+    """Symmetric confirmed pivots: length bars on both sides, like ta.pivot*."""
     top_value = ref(h, length)
     bottom_value = ref(l, length)
+    top_confirm = top_value == h.hhv(length * 2 + 1)
+    bottom_confirm = bottom_value == l.llv(length * 2 + 1)
     return top_confirm, bottom_confirm, top_value, bottom_value
 
 
@@ -156,6 +153,7 @@ fib_786 = _fib(fib_deep)
 fib_100 = _fib(1.000)
 zone_top = max(fib_618, fib_786)
 zone_bottom = min(fib_618, fib_786)
+zone_mid = (zone_top + zone_bottom) / 2.0
 
 zone_visible = active if show_zone else _false
 ote_visible = active if show_ote_levels else _false
@@ -174,10 +172,17 @@ else:
     bull_label = _false
     bear_label = _false
 
+if show_fib_labels:
+    grid_label = is_last & grid_visible
+    ote_label = is_last & ote_visible
+else:
+    grid_label = _false
+    ote_label = _false
+
 contact = active & (l <= zone_top) & (h >= zone_bottom)
 entered = contact & (~ref(contact, 1))
 
-# GLOBAL PLOTS — 11/50
+# GLOBAL PLOTS — 19/50
 plot_fillcolor("OTE zone", zone_top, zone_bottom, zone_visible, zone_color, 0)
 plot_stickline("Fib 0.000", grid_visible, fib_000 - line_half, fib_000 + line_half, 0.95, False, False, direction_color, 0)
 plot_stickline("Fib 0.236", grid_visible, fib_236 - line_half, fib_236 + line_half, 0.40, False, True, neutral, 0)
@@ -187,8 +192,16 @@ plot_stickline("Fib 0.618", ote_visible, fib_618 - line_half, fib_618 + line_hal
 plot_stickline("Fib 0.705", ote_visible, fib_705 - line_half, fib_705 + line_half, 0.45, False, True, direction_color, 0)
 plot_stickline("Fib 0.786", ote_visible, fib_786 - line_half, fib_786 + line_half, 0.95, False, False, direction_color, 0)
 plot_stickline("Fib 1.000", grid_visible, fib_100 - line_half, fib_100 + line_half, 0.95, False, False, direction_color, 0)
-plot_text("Bull OTE tag", bull_label, zone_bottom - label_gap, "Bull OTE", bull, 1, 0, 0, 0)
-plot_text("Bear OTE tag", bear_label, zone_top + label_gap, "Bear OTE", bear, 1, 0, 0, 0)
+plot_text("Fib 0 tag", grid_label, fib_000, "0.000", direction_color, fib_label_size, 0, 0, 0)
+plot_text("Fib 236 tag", grid_label, fib_236, "0.236", neutral, fib_label_size, 0, 0, 0)
+plot_text("Fib 382 tag", grid_label, fib_382, "0.382", neutral, fib_label_size, 0, 0, 0)
+plot_text("Fib 500 tag", grid_label, fib_500, "0.500", neutral, fib_label_size, 0, 0, 0)
+plot_text("Fib 618 tag", ote_label, fib_618, "0.618", direction_color, fib_label_size, 0, 0, 0)
+plot_text("Fib 705 tag", ote_label, fib_705, "0.705", direction_color, fib_label_size, 0, 0, 0)
+plot_text("Fib 786 tag", ote_label, fib_786, "0.786", direction_color, fib_label_size, 0, 0, 0)
+plot_text("Fib 1 tag", grid_label, fib_100, "1.000", direction_color, fib_label_size, 0, 0, 0)
+plot_text("Bull OTE tag", bull_label, zone_mid, "Bull OTE", bull, 1, 0, 0, 0)
+plot_text("Bear OTE tag", bear_label, zone_mid, "Bear OTE", bear, 1, 0, 0, 0)
 
 output_parameter(
     bullish_direction_shift=bull_shift,
