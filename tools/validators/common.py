@@ -42,4 +42,3 @@ class ValidationResult:
 
     def add(self, line: int, rule: str, severity: Severity, message: str) -> None:
         self.findings.append(Finding(self.path, line, rule, severity, message))
-

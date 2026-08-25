@@ -123,4 +123,3 @@ def validate_python(path: Path) -> ValidationResult:
     if result.draw_calls > 50:
         result.add(0, "PY102", "ERROR", f"{result.draw_calls} plot calls exceeds the verified 50-call limit")
     return result
-
