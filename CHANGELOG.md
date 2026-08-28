@@ -1,5 +1,15 @@
 # Changelog
 
+## Library 4.1 — 2026-08-28
+
+- Synchronized the client-validated v4/v4.1 Python indicator baseline from the referenced SMC conversation.
+- Removed every hundreds-deep full-history `ref/iff` Sequence construction loop.
+- Reduced `SMC_OB` from 50 to 46 plot calls and `SMC_IMB` from 46 to 31.
+- Replaced the experimental `OTE.py` with source-fidelity `OTE_CP.py` at 45/50 plots.
+- Corrected simultaneous HH/LL OTE execution order and EQH/EQL label y-position.
+- Added SH/SL swing text and increased default Structure label gaps.
+- Added deterministic runtime, randomized algorithm and source-state reference validation to CI.
+
 ## Library 4.0 — 2026-08-25
 
 - Reorganized the repository as the moomoo Indicator Library.

@@ -4,11 +4,11 @@ This repository contains multiple independent indicator collections. Attribution
 
 ## Optimal Trade Entry collection
 
-`indicators/ote/OTE.py` is an independent implementation of the commonly taught ICT-style Fibonacci retracement framework. Its pivot/shift, dynamic-stretching, and visual behavior are informed by the public description of **Smart Money Fibonacci OTE Engine [ChartPrime]**:
+`indicators/ote/OTE_CP.py` is an independent moomoo platform port of **Smart Money Fibonacci OTE Engine [ChartPrime]** and preserves the source header's Mozilla Public License 2.0 attribution:
 
 https://www.tradingview.com/script/iR7drqnn-Smart-Money-Fibonacci-OTE-Engine-ChartPrime/
 
-No ChartPrime Pine source code is included or copied. The implementation does not claim affiliation with or endorsement by ICT or ChartPrime.
+The port replaces Pine dynamic objects with bounded moomoo series channels and documents its platform differences. MPL-2.0 applies to `OTE_CP.py`; see `indicators/ote/LICENSE.md`.
 
 ## Smart Money Concepts collection
 
@@ -25,7 +25,7 @@ The files under `indicators/smc/` adapt **Smart Money Concepts (SMC) [LuxAlgo]**
 
 ### Modifications in this repository
 
-The Pine v5 indicator was adapted for the moomoo Python custom-indicator runtime. The work was split into Structure, Order Blocks, and Imbalance modules; Pine object state was rebuilt with static sequence operations; rendering was adapted to moomoo's 50-plot limit; and additional label-spacing and OB/FVG label controls were added.
+The Pine v5 indicator was adapted for the moomoo Python custom-indicator runtime. The work was split into Structure, Order Blocks, and Imbalance modules; Pine object state was rebuilt with bounded static sequence operations; rendering was adapted to moomoo's 50-plot limit; and label-spacing plus OB/FVG label controls were added. v4.1 removes the former hundreds-deep Sequence scans and preserves a 500-bar bounded fidelity horizon.
 
 The implementation is not a line-for-line translation and does not include a copy of the upstream Pine source. Refer to the pinned source link above for the original work.
 

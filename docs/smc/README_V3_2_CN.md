@@ -1,5 +1,7 @@
 # moomoo Smart Money Concepts v3.2：标签与中文手册版
 
+> **历史版本说明：** 本文记录 v3.2。当前正式代码为 v4.1；绘图预算、性能架构和默认标签间距以 [`../releases/V4_1_CN.md`](../releases/V4_1_CN.md) 为准。
+
 本包在 v3.1 源码对齐版基础上，集中处理三个使用体验问题：
 
 1. BOS、CHoCH、EQH/EQL、Strong/Weak 标签与结构线或 K 线重叠；

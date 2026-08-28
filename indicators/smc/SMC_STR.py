@@ -1,4 +1,4 @@
-# Smart Money Concepts [LuxAlgo] source-aligned port — Structure module v3.2
+# Smart Money Concepts [LuxAlgo] source-aligned port — Structure module v4.1 fidelity pass
 # Target: moomoo Python custom indicator
 # Source baseline: LuxAlgo open Pine v5 mirror, commit 31756c8615aff4cefe9cf97350e78bd427f663cd
 # License: CC BY-NC-SA 4.0; original © LuxAlgo. This port preserves attribution.
@@ -9,6 +9,7 @@
 # - plot name <= 25 chars
 # - plot_stickline has 9 positional args
 # - disconnected plot() runs are joined; independent segments use plot_stickline
+# - no Python loop constructs a hundreds-deep full-history Sequence graph
 
 import math
 from ftool import *
@@ -17,7 +18,7 @@ indicator(
     "SMC_STR",
     "SMC Structure",
     True,
-    "Source-aligned Internal/Swing structure with corrected pivot-to-break geometry, EQH/EQL and trailing Strong/Weak levels.",
+    "Source-aligned Internal/Swing structure, EQH/EQL and Strong/Weak levels using bounded native rolling primitives instead of deep Sequence scans.",
 )
 
 # -----------------------------------------------------------------------------
@@ -50,15 +51,14 @@ eq_label_size = input_parameter("EQ Label Size 1-3", 1)
 
 # Visual spacing controls. Values are ATR(200) multiples; increase them if
 # labels still overlap lines/candles on a particular symbol or timeframe.
-internal_label_gap_atr = input_parameter("Internal Label Gap ATR", 0.30)
-swing_label_gap_atr = input_parameter("Swing Label Gap ATR", 0.40)
-eq_label_gap_atr = input_parameter("EQ Label Gap ATR", 0.30)
-strongweak_gap_atr = input_parameter("StrongWeak Gap ATR", 0.35)
+internal_label_gap_atr = input_parameter("Internal Label Gap ATR", 0.40)
+swing_label_gap_atr = input_parameter("Swing Label Gap ATR", 0.50)
+eq_label_gap_atr = input_parameter("EQ Label Gap ATR", 0.40)
+strongweak_gap_atr = input_parameter("StrongWeak Gap ATR", 0.40)
 
-# moomoo sequence engine has no dynamic unbounded array/object state. 500 is the
-# explicit fidelity scan horizon for trailing extremes, matching the legacy
-# LuxAlgo max_bars_back reference and covering normal chart history.
-_TRAIL_SCAN = 500
+# Native rolling primitives replace the former 501-layer ref/iff scan. The
+# current trailing range remains exact inside this bounded source horizon.
+_RANGE_MAX = 500
 _INTERNAL_LEN = 5
 _BIG = 1000000000.0
 
@@ -215,8 +215,9 @@ def _history_equal_segment(event, current_level, previous_level, span_at_event, 
     line_value = current_y + (previous_y - current_y) * from_current_pivot / safe_span
     line_value = iff(visible, line_value, math.nan)
     midpoint = visible & (from_current_pivot * 2 >= span) & (from_current_pivot * 2 < span + 2)
-    label_y = (current_y + previous_y) / 2.0
-    return line_value, midpoint, label_y
+    # Pine places the EQH/EQL label at the newly confirmed pivot level;
+    # only its x-coordinate is centered between the two pivots.
+    return line_value, midpoint, current_y
 
 
 def _present_equal_segment(event, current_level, previous_level, span_at_event, confirmation_offset):
@@ -231,24 +232,32 @@ def _present_equal_segment(event, current_level, previous_level, span_at_event, 
     line_value = current_y + (previous_y - current_y) * from_current_pivot / safe_span
     line_value = iff(visible, line_value, math.nan)
     midpoint = visible & (from_current_pivot * 2 >= span) & (from_current_pivot * 2 < span + 2)
-    return line_value, midpoint, (current_y + previous_y) / 2.0
+    # Pine label y is the current equal pivot, not the arithmetic mean.
+    return line_value, midpoint, current_y
 
 
-def _scan_extreme_since(confirm_event, pivot_offset, source, find_maximum):
-    start_age = _age(confirm_event) + pivot_offset
-    has_start = _age(confirm_event) < _BIG
-    best = _nan
-    best_offset = _nan
-    for k in range(0, _TRAIL_SCAN + 1):
-        candidate = ref(source, k)
-        eligible = has_start & (start_age >= k)
-        if find_maximum:
-            better = eligible & (is_na(best) | (candidate > best))
-        else:
-            better = eligible & (is_na(best) | (candidate < best))
-        best = iff(better, candidate, best)
-        best_offset = iff(better, k, best_offset)
-    return best, best_offset, start_age
+def _current_extreme_since(confirm_event, pivot_offset, source, find_maximum):
+    """Current Pine-style trailing extreme with one native rolling node.
+
+    Only the latest confirmed swing range is needed for the right-edge
+    Strong/Weak objects.  We broadcast that range's actual pivot age across
+    history, mask everything before it, then evaluate one bounded HHV/LLV.
+    Equal extremes resolve to the latest occurrence, matching Pine's
+    `trailing.lastTopTime/lastBottomTime` update behavior.
+    """
+    start_age = _broadcast_last(_age(confirm_event) + pivot_offset)
+    has_start = start_age < _BIG
+    in_range = has_start & (x_age <= start_age)
+    if find_maximum:
+        masked = iff(in_range, source, 0.0 - _BIG)
+        extreme = _broadcast_last(masked.hhv(_RANGE_MAX + 1))
+    else:
+        masked = iff(in_range, source, _BIG)
+        extreme = _broadcast_last(masked.llv(_RANGE_MAX + 1))
+    selected_bar = in_range & (source == extreme)
+    selected_offset = _broadcast_last(_age(selected_bar))
+    valid = has_start & (~is_na(extreme)) & (abs(extreme) < _BIG * 0.5)
+    return iff(valid, extreme, math.nan), iff(valid, selected_offset, math.nan), start_age
 
 
 # ATR measure used by LuxAlgo EQH/EQL threshold and visual offsets.
@@ -305,23 +314,9 @@ int_bear_event = idbos | idch
 swing_bull_event = subos | such
 swing_bear_event = sdbos | sdch
 
-# Historical source-to-break geometry.
-i_bull_hist, _, _ = _history_structure_segment(int_bull_event, it_conf, _INTERNAL_LEN, it_level)
-i_bear_hist, _, _ = _history_structure_segment(int_bear_event, ib_conf, _INTERNAL_LEN, ib_level)
-s_bull_hist, _, _ = _history_structure_segment(swing_bull_event, st_conf, swing_length, st_level)
-s_bear_hist, _, _ = _history_structure_segment(swing_bear_event, sb_conf, swing_length, sb_level)
-_, miubos, yiubos = _history_structure_segment(iubos, it_conf, _INTERNAL_LEN, it_level)
-_, miuch, yiuch = _history_structure_segment(iuch, it_conf, _INTERNAL_LEN, it_level)
-_, midbos, yidbos = _history_structure_segment(idbos, ib_conf, _INTERNAL_LEN, ib_level)
-_, midch, yidch = _history_structure_segment(idch, ib_conf, _INTERNAL_LEN, ib_level)
-_, msubos, ysubos = _history_structure_segment(subos, st_conf, swing_length, st_level)
-_, msuch, ysuch = _history_structure_segment(such, st_conf, swing_length, st_level)
-_, msdbos, ysdbos = _history_structure_segment(sdbos, sb_conf, swing_length, sb_level)
-_, msdch, ysdch = _history_structure_segment(sdch, sb_conf, swing_length, sb_level)
-
+# Source-to-break geometry.  Only the selected display mode builds its graph.
 if present_mode:
-    # Pine Present mode deletes the prior line/label object; it does not extend
-    # the retained segment from the break bar to the current bar.
+    # Pine Present mode retains only the latest Internal and Swing object.
     i_any = int_bull_event | int_bear_event
     s_any = swing_bull_event | swing_bear_event
     i_span_at_event = iff(int_bull_event, _age(it_conf) + _INTERNAL_LEN, _age(ib_conf) + _INTERNAL_LEN)
@@ -358,18 +353,18 @@ if present_mode:
     ysdbos = s_y
     ysdch = s_y
 else:
-    i_bull_draw = i_bull_hist
-    i_bear_draw = i_bear_hist
-    s_bull_draw = s_bull_hist
-    s_bear_draw = s_bear_hist
-    viubos = miubos
-    viuch = miuch
-    vidbos = midbos
-    vidch = midch
-    vsubos = msubos
-    vsuch = msuch
-    vsdbos = msdbos
-    vsdch = msdch
+    iubos_line, viubos, yiubos = _history_structure_segment(iubos, it_conf, _INTERNAL_LEN, it_level)
+    iuch_line, viuch, yiuch = _history_structure_segment(iuch, it_conf, _INTERNAL_LEN, it_level)
+    idbos_line, vidbos, yidbos = _history_structure_segment(idbos, ib_conf, _INTERNAL_LEN, ib_level)
+    idch_line, vidch, yidch = _history_structure_segment(idch, ib_conf, _INTERNAL_LEN, ib_level)
+    subos_line, vsubos, ysubos = _history_structure_segment(subos, st_conf, swing_length, st_level)
+    such_line, vsuch, ysuch = _history_structure_segment(such, st_conf, swing_length, st_level)
+    sdbos_line, vsdbos, ysdbos = _history_structure_segment(sdbos, sb_conf, swing_length, sb_level)
+    sdch_line, vsdch, ysdch = _history_structure_segment(sdch, sb_conf, swing_length, sb_level)
+    i_bull_draw = iff(~is_na(iubos_line), iubos_line, iuch_line)
+    i_bear_draw = iff(~is_na(idbos_line), idbos_line, idch_line)
+    s_bull_draw = iff(~is_na(subos_line), subos_line, such_line)
+    s_bear_draw = iff(~is_na(sdbos_line), sdbos_line, sdch_line)
 
 # -----------------------------------------------------------------------------
 # Swing point labels: source defaults Show Swings Points = false.
@@ -413,12 +408,12 @@ else:
 # -----------------------------------------------------------------------------
 # Source-aligned trailing extremes for Strong/Weak H/L.
 # -----------------------------------------------------------------------------
-trailing_top_raw, trailing_top_offset_raw, top_start_age = _scan_extreme_since(st_conf, swing_length, h, True)
-trailing_bottom_raw, trailing_bottom_offset_raw, bottom_start_age = _scan_extreme_since(sb_conf, swing_length, l, False)
-trailing_top = _broadcast_last(trailing_top_raw)
-trailing_bottom = _broadcast_last(trailing_bottom_raw)
-trailing_top_offset = _broadcast_last(trailing_top_offset_raw)
-trailing_bottom_offset = _broadcast_last(trailing_bottom_offset_raw)
+trailing_top_raw, trailing_top_offset_raw, top_start_age = _current_extreme_since(st_conf, swing_length, h, True)
+trailing_bottom_raw, trailing_bottom_offset_raw, bottom_start_age = _current_extreme_since(sb_conf, swing_length, l, False)
+trailing_top = trailing_top_raw
+trailing_bottom = trailing_bottom_raw
+trailing_top_offset = trailing_top_offset_raw
+trailing_bottom_offset = trailing_bottom_offset_raw
 top_exists = (~is_na(trailing_top)) & (~is_na(trailing_top_offset))
 bottom_exists = (~is_na(trailing_bottom)) & (~is_na(trailing_bottom_offset))
 top_line_visible = top_exists & (x_age <= trailing_top_offset)

@@ -1,63 +1,54 @@
-# Optimal Trade Entry (`OTE`)
+# ChartPrime Optimal Trade Entry (`OTE_CP`)
 
-Standalone pivot-and-shift Fibonacci retracement engine for the moomoo Python custom-indicator runtime.
-
-## What it draws
-
-- HH/LL direction-shift detection
-- Bullish or bearish 61.8%–78.6% OTE zone
-- 70.5% optimal reference line
-- Optional full `0 / 0.236 / 0.382 / 0.5 / 1.0` Fibonacci grid
-- Dynamic stretching when the trend makes new highs or lows
-- Direction label at the chart's right edge
-
-The indicator uses confirmed alternating pivots. With `Pivot Length = 5`, a pivot appears only after five bars of confirmation; the zone is not back-painted to the original pivot bar.
+Memory-bounded moomoo Python port of **Smart Money Fibonacci OTE Engine [ChartPrime]**.
 
 ## Installation
 
-Create a new Python overlay indicator named `OTE` in moomoo Desktop and paste the complete contents of [`OTE.py`](OTE.py).
+Create a Python main-chart indicator named `OTE_CP` and paste the complete contents of [`OTE_CP.py`](OTE_CP.py).
 
-## Default parameters
+## v4.1 features
 
-| Parameter | Default | Meaning |
-|---|---:|---|
-| Pivot Length | 5 | Bars required to confirm a swing |
-| OTE Shallow Fib | 0.618 | Shallow zone boundary |
-| OTE Optimal Fib | 0.705 | Reference level inside the zone |
-| OTE Deep Fib | 0.786 | Deep zone boundary |
-| Show Full Fib Grid | True | Draw the non-OTE Fibonacci levels |
-| Invalidate Origin Break | True | Hide a grid whose structural origin is breached |
+- symmetric confirmed pivots with default `Pivot Length = 10`;
+- HH/LL direction shifts and structure lines;
+- SH/SL text for ordinary confirmed swings;
+- dynamic high/low anchor stretching;
+- current Fibonacci grid and swing diagonal;
+- customizable 0.618–0.786 OTE zone;
+- pale-yellow alpha fill and fixed OTE label;
+- optional latest two completed previous Fib sets;
+- output parameters for shift events, anchors, direction, OTE bounds and Fib values.
 
-Keep the ratios ordered as `0 < shallow < optimal < deep < 1`.
+## Important defaults
 
-## Lifecycle
+| Parameter | Default |
+|---|---:|
+| Pivot Length | 10 |
+| Show Swing Markers | True |
+| Show SH/SL Text | True |
+| Show HH/LL Shift Lines | True |
+| Show OTE Zone | True |
+| Show Fib Levels | True |
+| Show Swing Diagonal | True |
+| Show Previous Fibs | False |
+| OTE Lower / Upper | 0.618 / 0.786 |
 
-1. A Higher High can establish a bullish direction shift.
-2. A Lower Low can establish a bearish direction shift.
-3. Repeated HH/LL in the same direction stretch the current grid instead of starting a new one.
-4. The latest opposite direction shift replaces the displayed grid.
-5. With origin invalidation enabled, a wick beyond the structural origin hides the grid.
+## Reference behavior
 
-Because the expansion endpoint follows new extremes, the grid and OTE zone intentionally move while the trend is extending. That behavior keeps the current retracement mathematically aligned but must not be mistaken for a fixed, non-moving historical signal.
+When one confirmation bar qualifies as both HH and LL, the bullish branch is processed first and the bearish branch second. Both event outputs remain true while final direction becomes bearish. v4.1 preserves that execution order.
 
-## ChartPrime behavior comparison
+Continued pivots in the active direction stretch the anchor. Previous-object graph construction is skipped entirely when `Show Previous Fibs = False`.
 
-| Capability | moomoo `OTE` |
-|---|---|
-| Pivot-based HH/LL direction shifts | Supported |
-| Dynamic stretching with trend extremes | Supported |
-| Custom 0.618–0.786 OTE boundaries | Supported |
-| 70.5% reference | Supported |
-| Full current Fibonacci grid | Supported |
-| Structural-origin invalidation | Added safety option |
-| Swing diagonal between anchors | Not included; moomoo has no equivalent dynamic line object |
-| Previous historical Fib objects | Not included in v1.0; current grid only |
-| Price labels beyond the final bar | Not available in the tested runtime |
+## moomoo visual equivalents
+
+- Pine dynamic objects are recreated through bounded static channels.
+- Previous history is limited to the latest two completed Fib sets.
+- Dynamic numeric strings cannot be passed to `plot_text()`; prices remain visible through legend/hover/output parameters.
+- Anchor searches are bounded to the latest 500 bars.
 
 ## Trading-process boundary
 
-OTE identifies a pullback location; it is not a Buy/Sell signal. A disciplined workflow still requires higher-timeframe direction, independent right-side structure confirmation, a defined loss boundary, a target, and acceptable risk/reward. If price never retraces into the zone, the default action is no chase and no action.
+OTE identifies a pullback location, not a Buy/Sell instruction. A zone touch requires independent direction, right-side confirmation, a loss boundary, target and acceptable risk/reward. No retracement means no chase and no action.
 
-This is an independent implementation of the commonly taught ICT-style OTE Fibonacci framework. Its pivot/shift, dynamic-stretching, and visual behavior are informed by the public description of [Smart Money Fibonacci OTE Engine [ChartPrime]](https://www.tradingview.com/script/iR7drqnn-Smart-Money-Fibonacci-OTE-Engine-ChartPrime/). No ChartPrime Pine source code is included or copied.
+## Attribution
 
-OTE is not part of LuxAlgo Smart Money Concepts. This project is not affiliated with ICT, ChartPrime, LuxAlgo, TradingView, moomoo, or Futu.
+Original concept/source: **Smart Money Fibonacci OTE Engine [ChartPrime]**, open-source Pine Script, MPL-2.0. This independent moomoo platform port preserves attribution. See [LICENSE.md](LICENSE.md) and the repository [NOTICE](../../NOTICE.md).

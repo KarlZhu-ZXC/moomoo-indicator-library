@@ -1,26 +1,34 @@
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-CC BY-NC-SA 4.0
+Multi-license repository notice
 
-This work is licensed under the Creative Commons Attribution-NonCommercial-
-ShareAlike 4.0 International Public License.
+This repository contains separately attributed indicator collections.
 
-You are free to share and adapt the material under the following terms:
+1. Smart Money Concepts collection
 
-1. Attribution — You must give appropriate credit, provide a link to the
-   license, and indicate if changes were made.
-2. NonCommercial — You may not use the material for commercial purposes.
-3. ShareAlike — If you remix, transform, or build upon the material, you must
-   distribute your contributions under the same license as the original.
-4. No additional restrictions — You may not apply legal terms or technological
-   measures that legally restrict others from doing anything the license permits.
-
-Full legal code:
-https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en
+Files under indicators/smc/ adapt Smart Money Concepts (SMC) [LuxAlgo],
+© LuxAlgo, and are distributed under Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
 
 License deed:
 https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-The Smart Money Concepts collection adapts Smart Money Concepts (SMC)
-[LuxAlgo], © LuxAlgo. Other collections may have different attribution or
-reference notices. See NOTICE.md for collection-specific source links and
-modification details.
+Legal code:
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en
+
+2. Optimal Trade Entry collection
+
+indicators/ote/OTE_CP.py preserves the source header's Mozilla Public License
+2.0 (MPL-2.0) attribution for Smart Money Fibonacci OTE Engine [ChartPrime].
+
+License text:
+https://www.mozilla.org/MPL/2.0/
+
+See indicators/ote/LICENSE.md for the scoped notice.
+
+3. Repository documentation and original diagrams
+
+Unless stated otherwise, original repository documentation and diagrams are
+distributed under CC BY-NC-SA 4.0.
+
+See NOTICE.md for source links, modifications, trademarks and collection-
+specific attribution. No license or attribution implies endorsement by the
+original authors, TradingView, moomoo or Futu.
