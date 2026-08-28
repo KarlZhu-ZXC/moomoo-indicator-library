@@ -7,10 +7,10 @@
 | BOS / CHoCH | Source-aligned | State-driven classification with pivot-to-break geometry |
 | HH / HL / LH / LL | Supported | Optional swing-point labels |
 | EQH / EQL | Supported | ATR-threshold comparison and independent segments |
-| Strong / Weak High-Low | Adapted | Trailing extremes use an explicit 500-bar scan horizon |
-| Internal / Swing OB | Supported | Active blocks, volatility parsing, mitigation and labels |
+| Strong / Weak High-Low | Adapted | Current trailing extremes use masked native HHV/LLV within a 500-bar horizon |
+| Internal / Swing OB | Supported | 32 candidate lanes, 20 bounded state slots per family, mitigation and labels |
 | FVG | Current timeframe | Arbitrary Pine `request.security()` timeframe is unavailable |
-| Premium / Equilibrium / Discount | Supported | Uses the trailing swing range |
+| Premium / Equilibrium / Discount | Supported | Uses a native rolling current trailing range |
 | Previous D/W/M High-Low | Not included | Calendar/timeframe facilities were not available in the client-confirmed runtime |
 | Pine dynamic objects | Visual equivalent | Rebuilt with static moomoo plot channels |
 | Present mode | Adapted | Subject to static object/rendering semantics |
@@ -22,5 +22,7 @@
 - Plot names are limited to 25 characters.
 - `plot_stickline` uses the client-confirmed nine-argument signature.
 - Disconnected `plot()` runs may be joined; independent structure segments therefore use stickline primitives.
+- Hundreds-deep `ref/iff` Sequence construction scans are prohibited by the repository validator.
+- Current precise trailing, OB and FVG searches are bounded to the latest 500 bars.
 
 The SMC files pass ordinary Python syntax compilation and repository-level static checks. The moomoo desktop client remains the authoritative compiler and renderer because `ftool` is provided by that environment.

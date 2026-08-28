@@ -8,7 +8,32 @@ import sys
 from pathlib import Path
 
 
-PLOT_NAMES = {"plot", "plot_bar", "plot_candle", "plot_fillcolor", "plot_icon", "plot_stickline", "plot_text"}
+PLOT_NAMES = {
+    "plot",
+    "plot_bar",
+    "plot_candle",
+    "plot_candlestick",
+    "plot_fillcolor",
+    "plot_hline",
+    "plot_icon",
+    "plot_stickline",
+    "plot_text",
+}
+BANNED_GLOBAL_CALLS = {"tr", "smma", "mod", "year", "month", "day", "weekofyear"}
+FORBIDDEN_PLOT_PARENTS = (
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.For,
+    ast.While,
+    ast.If,
+    ast.With,
+    ast.Try,
+    ast.Lambda,
+    ast.ListComp,
+    ast.DictComp,
+    ast.SetComp,
+    ast.GeneratorExp,
+)
 
 
 def call_name(node: ast.Call) -> str:
@@ -30,15 +55,20 @@ def validate(path: Path) -> list[str]:
 
     plots: list[ast.Call] = []
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call) or call_name(node) not in PLOT_NAMES:
+        if not isinstance(node, ast.Call):
+            continue
+        name = call_name(node)
+        if isinstance(node.func, ast.Name) and name in BANNED_GLOBAL_CALLS:
+            errors.append(f"{path}:{node.lineno}: unsupported unqualified runtime call {name}()")
+        if name not in PLOT_NAMES:
             continue
         plots.append(node)
 
         current: ast.AST | None = node
         while current in parent:
             current = parent[current]
-            if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
-                errors.append(f"{path}:{node.lineno}: plot call is inside a local scope")
+            if isinstance(current, FORBIDDEN_PLOT_PARENTS):
+                errors.append(f"{path}:{node.lineno}: {name} is not at module/global scope")
                 break
 
         if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
@@ -50,6 +80,10 @@ def validate(path: Path) -> list[str]:
 
     if len(plots) > 50:
         errors.append(f"{path}: {len(plots)} plot calls exceeds the 50-call limit")
+    if "values[-1]" in source or ".values[-1]" in source:
+        errors.append(f"{path}: unsafe Sequence.values[-1] access")
+    if "range(0, 501)" in source or "range(501)" in source:
+        errors.append(f"{path}: deep 501-layer Sequence scan reintroduced")
 
     repository_root = Path(__file__).resolve().parents[1]
     print(f"{path.relative_to(repository_root)}: syntax PASS; plots {len(plots)}/50")

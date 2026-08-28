@@ -1,72 +1,76 @@
 # moomoo Indicator Library
 
 <p align="center">
-  <strong>Open-source technical-analysis indicators for the moomoo Python custom-indicator runtime</strong><br>
-  Smart Money Concepts · Optimal Trade Entry · More modules to come
+  <strong>Memory-bounded technical-analysis indicators for the moomoo Python custom-indicator runtime</strong><br>
+  Smart Money Concepts · ChartPrime Optimal Trade Entry
 </p>
 
 <p align="center">
-  <img alt="Library 4.0" src="https://img.shields.io/badge/library-4.0-089981?style=for-the-badge">
+  <img alt="Library 4.1" src="https://img.shields.io/badge/library-4.1-089981?style=for-the-badge">
   <img alt="moomoo" src="https://img.shields.io/badge/platform-moomoo-00C805?style=for-the-badge">
   <img alt="Python" src="https://img.shields.io/badge/language-Python-3178C6?style=for-the-badge">
-  <img alt="CC BY-NC-SA 4.0" src="https://img.shields.io/badge/license-CC_BY--NC--SA_4.0-F23645?style=for-the-badge">
+  <img alt="Multi-license" src="https://img.shields.io/badge/license-multi--license-F23645?style=for-the-badge">
 </p>
 
 > [!IMPORTANT]
-> These are unofficial community indicators. They are built for education, research, and chart analysis—not automatic trading. The moomoo Desktop client remains the authoritative compiler and renderer.
+> These are unofficial community ports for education, research, and chart analysis—not automatic trading. The moomoo Desktop client remains the authoritative compiler and renderer.
 
 ## Indicator catalog
 
-| Collection | Indicators | Status | Description |
-|---|---|---|---|
-| [Smart Money Concepts](indicators/smc/) | `SMC_STR`, `SMC_OB`, `SMC_IMB` | Stable · v3.2 | Structure, BOS/CHoCH, Order Blocks, FVGs, EQH/EQL, and value zones |
-| [Optimal Trade Entry](indicators/ote/) | `OTE` | New · v1.0 | HH/LL direction-shift Fibonacci grid with a dynamic 61.8%–78.6% zone |
+| Collection | Indicators | Version | Plot budget | Description |
+|---|---|---:|---:|---|
+| [Smart Money Concepts](indicators/smc/) | `SMC_STR` | 4.1 | 28 / 50 | Structure, BOS/CHoCH, swing points, EQH/EQL, Strong/Weak |
+| [Smart Money Concepts](indicators/smc/) | `SMC_OB` | 4.1 | 46 / 50 | Internal/swing Order Blocks with mitigation and labels |
+| [Smart Money Concepts](indicators/smc/) | `SMC_IMB` | 4.1 | 31 / 50 | FVGs and Premium/Equilibrium/Discount |
+| [Optimal Trade Entry](indicators/ote/) | `OTE_CP` | 4.1 | 45 / 50 | ChartPrime-style Fibonacci grid, shifts, anchors, OTE and optional previous sets |
 
 ## Quick installation
 
-1. Open **Indicator Management** in moomoo Desktop.
-2. Create a new **Python overlay indicator**.
-3. Copy one indicator file in full into the editor.
-4. Use the short name shown below, then run **Test** and **Apply**.
+Create each file as a separate **Python overlay indicator** in moomoo Desktop:
 
 | Short name | File |
 |---|---|
-| `OTE` | [`indicators/ote/OTE.py`](indicators/ote/OTE.py) |
+| `OTE_CP` | [`indicators/ote/OTE_CP.py`](indicators/ote/OTE_CP.py) |
 | `SMC_STR` | [`indicators/smc/SMC_STR.py`](indicators/smc/SMC_STR.py) |
 | `SMC_OB` | [`indicators/smc/SMC_OB.py`](indicators/smc/SMC_OB.py) |
 | `SMC_IMB` | [`indicators/smc/SMC_IMB.py`](indicators/smc/SMC_IMB.py) |
 
-Each file is standalone. OTE is deliberately separate from SMC and does not consume any SMC module's plot budget or state.
+Remove older same-name indicators before loading v4.1. If the chart previously loaded a pre-v4 deep-graph build, fully quit and reopen moomoo once to clear the old indicator instance.
 
-## Optimal Trade Entry
+## What changed in v4.1
 
-`OTE` displays the latest structure-directed Fibonacci grid:
+### Memory architecture
 
-- HH/LL direction-shift recognition
-- 61.8% shallow boundary
-- 70.5% optimal reference
-- 78.6% deep boundary
-- bullish or bearish shaded zone
-- optional full Fibonacci grid
-- dynamic stretching with new trend extremes
-- optional structural-origin invalidation
+The former implementations built hundreds-deep `ref → compare → iff` Sequence graphs. v4.1 removes every 500/501-layer full-history construction loop and prefers masked native `HHV/LLV` nodes.
 
-The default pivot length is 5. A swing is confirmed only after the required bars have elapsed, so direction shifts appear with confirmation lag. Once direction exists, the expansion endpoint follows new highs or lows; the OTE zone therefore moves while the trend continues to extend.
+- `SMC_STR`: current trailing extremes use one bounded native rolling node.
+- `SMC_OB`: 32 interleaved candidate lanes and 20 bounded state slots per family.
+- `SMC_IMB`: 20 FVG state slots with in-place age ranking.
+- `OTE_CP`: current shift masks and native confirmed-pivot extremes; previous Fib state is skipped when disabled.
 
-> [!CAUTION]
-> OTE is a location filter, not an entry command. A zone touch should result in review—not an automatic position change—until direction, right-side confirmation, loss boundary, target, and risk/reward are defined.
+Client observation from the source conversation: fast symbol switching now peaks around 2–3 GB and shows clear reclamation instead of unbounded growth.
 
-See the complete [OTE documentation](indicators/ote/README.md).
+### Fidelity fixes
+
+- OTE simultaneous HH/LL confirmation preserves both events; bearish wins final state because its branch runs second, matching the reference execution order.
+- EQH/EQL label y-position uses the newly confirmed equal pivot, not the average of both pivots.
+- Default Structure label gaps increased to `0.40 / 0.50 / 0.40 / 0.40 ATR`.
+- `OTE_CP` adds fixed `SH`/`SL` text beside confirmed swing markers.
+- Fib styling is lighter and the OTE zone uses a pale-yellow fill.
+
+See [v4.1 release notes](docs/releases/V4_1_CN.md) and the [import/provenance audit](docs/releases/V4_1_PROVENANCE.md).
+
+## OTE_CP defaults
+
+- `Pivot Length = 10`
+- `Show Previous Fibs = False`
+- current Fibonacci grid and swing diagonal enabled
+- pale-yellow 0.618–0.786 OTE zone
+- HH/LL shifts plus SH/SL swing markers
+
+Use the same Pivot Length on TradingView and moomoo when comparing anchors. moomoo cannot reproduce Pine's dynamic numeric label strings; current prices remain available through the legend, hover values, and output parameters.
 
 ## Smart Money Concepts
-
-The SMC collection remains split into three stackable modules because the tested moomoo Desktop Python compiler rejects a script with more than 50 static `plot*()` calls.
-
-| Indicator | Features | Static plot budget |
-|---|---|---:|
-| `SMC_STR` | Internal/swing structure, BOS, CHoCH, HH/HL/LH/LL, EQH/EQL, Strong/Weak | 28 / 50 |
-| `SMC_OB` | Internal/swing Order Blocks, volatility filtering, mitigation, labels | 50 / 50 |
-| `SMC_IMB` | Current-timeframe FVGs and Premium/Equilibrium/Discount | 46 / 50 |
 
 <p align="center">
   <img src="docs/smc/assets/fig1_structure.png" alt="Market structure, BOS, and CHoCH diagram" width="900">
@@ -76,70 +80,53 @@ The SMC collection remains split into three stackable modules because the tested
 |---|---|
 | ![Liquidity](docs/smc/assets/fig2_liquidity.png) | ![Order Blocks and FVG](docs/smc/assets/fig3_ob_fvg.png) |
 
-| Premium · Equilibrium · Discount |
-|---|
-| ![Premium, equilibrium, and discount zones](docs/smc/assets/fig4_zones.png) |
-
 SMC resources:
 
 - [Collection overview](indicators/smc/README.md)
 - [Compatibility matrix](docs/smc/COMPATIBILITY.md)
 - [Chinese handbook — Markdown](docs/smc/Smart_Money_Concepts_实战手册_CN.md)
 - [Chinese handbook — PDF](docs/smc/Smart_Money_Concepts_实战手册_CN.pdf)
-- [Chinese handbook — editable Word](docs/smc/Smart_Money_Concepts_实战手册_CN.docx)
 
-## Client-observed constraints
+## Validation
 
-The repository validator checks behavior observed in the tested moomoo Desktop Python custom-indicator compiler:
+The repository checks:
 
-- plot functions remain at module/global scope;
-- no indicator exceeds 50 static `plot*()` calls;
-- plot names contain at most 25 characters;
-- `plot_stickline` uses the client-confirmed nine-argument signature.
-
-The 50-call ceiling is client-observed rather than a limit published on moomoo's public website and may change in future versions.
-
-Run all repository checks with:
+- Python syntax and global-scope plot calls;
+- 50-call plot ceiling and 25-character plot names;
+- tested unsupported global functions;
+- absence of `Sequence.values[-1]` access;
+- absence of 500/501-layer Sequence construction scans;
+- deterministic simulated execution on 1,400 OHLC bars;
+- LuxAlgo structure state against a scalar reference;
+- ChartPrime pivot/shift/anchor state against a scalar reference;
+- randomized OB selection and active-slot ranking;
+- v4.1 OTE/EQH/OB fidelity regressions.
 
 ```bash
+python -m pip install -r tools/reference/v4_1/requirements.txt
 python tools/validate.py
+python tools/reference/v4_1/validate_stub_runtime.py
+python tools/reference/v4_1/validate_optimized_algorithms.py
+python tools/reference/v4_1/validate_smc_reference.py
+python tools/reference/v4_1/validate_ote_reference.py
+python tools/reference/v4_1/validate_v4_1_fidelity.py
 ```
 
-## Repository layout
+## Platform boundaries
 
-```text
-indicators/
-├── ote/
-│   ├── OTE.py
-│   └── README.md
-└── smc/
-    ├── SMC_STR.py
-    ├── SMC_OB.py
-    ├── SMC_IMB.py
-    └── README.md
+- No verified equivalent of Pine `request.security()` for arbitrary-timeframe FVGs.
+- No dynamic Pine line/box/label object lifecycle; future-space extension and large historical object sets use bounded visual equivalents.
+- `plot_text()` cannot accept per-bar dynamic strings such as `0.618 (215.21)`.
+- Precise trailing, OB, and anchor searches are bounded to the latest 500 bars to prevent deep graph regressions.
 
-docs/
-└── smc/
-    ├── assets/
-    ├── COMPATIBILITY.md
-    └── Smart_Money_Concepts_实战手册_CN.*
-```
+## Attribution and licenses
 
-## Attribution
+- `indicators/smc/*`: adapted from **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo, under CC BY-NC-SA 4.0.
+- `indicators/ote/OTE_CP.py`: port of **Smart Money Fibonacci OTE Engine [ChartPrime]**, preserving its MPL-2.0 attribution.
+- Original repository documentation and diagrams: CC BY-NC-SA 4.0 unless stated otherwise.
 
-The SMC collection adapts **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo:
-
-- [Official TradingView publication](https://www.tradingview.com/script/CnB3fSph-Smart-Money-Concepts-SMC-LuxAlgo/)
-- [Pinned Pine v5 source baseline](https://github.com/deepentropy/lightweight-charts-indicators/blob/31756c8615aff4cefe9cf97350e78bd427f663cd/docs/official/indicators_community/Smart%20Money%20Concepts%20%28SMC%29%20%5BLuxAlgo%5D.pine)
-
-OTE is an independent implementation of the commonly taught ICT-style Fibonacci retracement framework. Its behavior is informed by the public description of [Smart Money Fibonacci OTE Engine [ChartPrime]](https://www.tradingview.com/script/iR7drqnn-Smart-Money-Fibonacci-OTE-Engine-ChartPrime/); no third-party OTE source code is included.
-
-See [NOTICE.md](NOTICE.md) for the full attribution and modification notice. LuxAlgo, ICT, TradingView, moomoo, and Futu names and trademarks belong to their respective owners. This project is not affiliated with, endorsed by, or sponsored by any of them.
+See [NOTICE.md](NOTICE.md), [LICENSE](LICENSE), and the [OTE license notice](indicators/ote/LICENSE.md). LuxAlgo, ChartPrime, TradingView, moomoo, and Futu names and trademarks belong to their respective owners. This project is not affiliated with, endorsed by, or sponsored by any of them.
 
 ## Risk disclosure
 
-Indicators organize historical OHLC observations. They do not identify institutional orders, predict outcomes, define personal suitability, or replace a complete trade plan. Before any proposed exposure, independently define the decision horizon, direction, confirmation, loss boundary, target, and acceptable risk/reward.
-
-## License
-
-This repository is released under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**. Preserve attribution, use the material only for non-commercial purposes, and distribute adaptations under the same license. See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
+Indicators organize historical OHLC observations. They do not identify institutional orders, predict outcomes, define personal suitability, or replace a complete trade plan. Independently define direction, confirmation, loss boundary, target, and acceptable risk/reward before any proposed exposure.

@@ -7,7 +7,7 @@ body:
     id: module
     attributes:
       label: Module
-      options: [OTE, SMC_STR, SMC_OB, SMC_IMB]
+      options: [OTE_CP, SMC_STR, SMC_OB, SMC_IMB]
     validations:
       required: true
   - type: input
@@ -38,5 +38,5 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I understand this project is unofficial and intended for non-commercial use.
+        - label: I understand this is an unofficial community project and each collection has its own license notice.
           required: true
