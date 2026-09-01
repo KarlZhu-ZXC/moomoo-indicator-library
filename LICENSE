@@ -24,7 +24,12 @@ https://www.mozilla.org/MPL/2.0/
 
 See indicators/ote/LICENSE.md for the scoped notice.
 
-3. Repository documentation and original diagrams
+3. Historical Similarity collection
+
+Files under indicators/historical-similarity/ are original repository
+contributions distributed under CC BY-NC-SA 4.0.
+
+4. Repository documentation and original diagrams
 
 Unless stated otherwise, original repository documentation and diagrams are
 distributed under CC BY-NC-SA 4.0.

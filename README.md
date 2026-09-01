@@ -2,11 +2,11 @@
 
 <p align="center">
   <strong>Memory-bounded technical-analysis indicators for the moomoo Python custom-indicator runtime</strong><br>
-  Smart Money Concepts · ChartPrime Optimal Trade Entry
+  Smart Money Concepts · ChartPrime Optimal Trade Entry · Historical Similarity Projection
 </p>
 
 <p align="center">
-  <img alt="Library 4.1" src="https://img.shields.io/badge/library-4.1-089981?style=for-the-badge">
+  <img alt="Library 4.2" src="https://img.shields.io/badge/library-4.2-089981?style=for-the-badge">
   <img alt="moomoo" src="https://img.shields.io/badge/platform-moomoo-00C805?style=for-the-badge">
   <img alt="Python" src="https://img.shields.io/badge/language-Python-3178C6?style=for-the-badge">
   <img alt="Multi-license" src="https://img.shields.io/badge/license-multi--license-F23645?style=for-the-badge">
@@ -23,6 +23,8 @@
 | [Smart Money Concepts](indicators/smc/) | `SMC_OB` | 4.1 | 46 / 50 | Internal/swing Order Blocks with mitigation and labels |
 | [Smart Money Concepts](indicators/smc/) | `SMC_IMB` | 4.1 | 31 / 50 | FVGs and Premium/Equilibrium/Discount |
 | [Optimal Trade Entry](indicators/ote/) | `OTE_CP` | 4.1 | 45 / 50 | ChartPrime-style Fibonacci grid, shifts, anchors, OTE and optional previous sets |
+| [Historical Similarity](indicators/historical-similarity/) | `HIST_SIM` | 2.0.1 | 28 / 50 | Exhaustive ten-year log/percent path matching and realized continuation |
+| [Historical Similarity](indicators/historical-similarity/) | `HIST_SIM_PCT` | 2.0.1 | 28 / 50 | Percentage-only compatibility fallback |
 
 ## Quick installation
 
@@ -34,6 +36,8 @@ Create each file as a separate **Python overlay indicator** in moomoo Desktop:
 | `SMC_STR` | [`indicators/smc/SMC_STR.py`](indicators/smc/SMC_STR.py) |
 | `SMC_OB` | [`indicators/smc/SMC_OB.py`](indicators/smc/SMC_OB.py) |
 | `SMC_IMB` | [`indicators/smc/SMC_IMB.py`](indicators/smc/SMC_IMB.py) |
+| `HIST_SIM` | [`indicators/historical-similarity/HIST_SIM.py`](indicators/historical-similarity/HIST_SIM.py) |
+| `HIST_SIM` fallback | [`indicators/historical-similarity/HIST_SIM_PCT.py`](indicators/historical-similarity/HIST_SIM_PCT.py) |
 
 Remove older same-name indicators before loading v4.1. If the chart previously loaded a pre-v4 deep-graph build, fully quit and reopen moomoo once to clear the old indicator instance.
 
@@ -70,6 +74,19 @@ See [v4.1 release notes](docs/releases/V4_1_CN.md) and the [import/provenance au
 
 Use the same Pivot Length on TradingView and moomoo when comparing anchors. moomoo cannot reproduce Pine's dynamic numeric label strings; current prices remain available through the legend, hover values, and output parameters.
 
+## Historical Similarity Projection
+
+`HIST_SIM` compares the latest normalized 50-bar path against every eligible historical anchor from 71 to 2520 bars ago. On a sufficiently loaded daily chart, that is approximately 2,450 candidate windows over ten trading years.
+
+- primary mode: cumulative natural-log path using `math_log()`;
+- fallback: cumulative percentage path with no logarithm dependency;
+- recent-tail and final-bar shock weighting;
+- dashed matched history plus solid realized continuation;
+- dynamic source dates rendered through fixed digit channels;
+- explicit loaded-history and full-ten-year outputs.
+
+The fit score is a custom similarity diagnostic, not a forecast probability. See the [collection documentation](indicators/historical-similarity/README.md), [eight-symbol OpenD regression](docs/releases/HIST_SIM_V2_0_1_REGRESSION.md), and [import audit](docs/releases/HIST_SIM_V2_0_1_PROVENANCE.md).
+
 ## Smart Money Concepts
 
 <p align="center">
@@ -101,6 +118,8 @@ The repository checks:
 - ChartPrime pivot/shift/anchor state against a scalar reference;
 - randomized OB selection and active-slot ranking;
 - v4.1 OTE/EQH/OB fidelity regressions.
+- HIST_SIM and percentage fallback simulated execution;
+- exhaustive candidate-count invariants and an eight-symbol ten-year OpenD regression snapshot.
 
 ```bash
 python -m pip install -r tools/reference/v4_1/requirements.txt
@@ -110,6 +129,7 @@ python tools/reference/v4_1/validate_optimized_algorithms.py
 python tools/reference/v4_1/validate_smc_reference.py
 python tools/reference/v4_1/validate_ote_reference.py
 python tools/reference/v4_1/validate_v4_1_fidelity.py
+python -m unittest discover -s tools/tests
 ```
 
 ## Platform boundaries
@@ -118,11 +138,13 @@ python tools/reference/v4_1/validate_v4_1_fidelity.py
 - No dynamic Pine line/box/label object lifecycle; future-space extension and large historical object sets use bounded visual equivalents.
 - `plot_text()` cannot accept per-bar dynamic strings such as `0.618 (215.21)`.
 - Precise trailing, OB, and anchor searches are bounded to the latest 500 bars to prevent deep graph regressions.
+- HIST_SIM can search only the bars supplied by the client; check `full_history_loaded` before describing a result as ten-year coverage.
 
 ## Attribution and licenses
 
 - `indicators/smc/*`: adapted from **Smart Money Concepts (SMC) [LuxAlgo]**, © LuxAlgo, under CC BY-NC-SA 4.0.
 - `indicators/ote/OTE_CP.py`: port of **Smart Money Fibonacci OTE Engine [ChartPrime]**, preserving its MPL-2.0 attribution.
+- `indicators/historical-similarity/*`: original repository contribution under CC BY-NC-SA 4.0.
 - Original repository documentation and diagrams: CC BY-NC-SA 4.0 unless stated otherwise.
 
 See [NOTICE.md](NOTICE.md), [LICENSE](LICENSE), and the [OTE license notice](indicators/ote/LICENSE.md). LuxAlgo, ChartPrime, TradingView, moomoo, and Futu names and trademarks belong to their respective owners. This project is not affiliated with, endorsed by, or sponsored by any of them.

@@ -1,0 +1,265 @@
+{
+  "schema": 1,
+  "generated_at": "2026-09-01",
+  "source": "moomoo OpenD request_history_kline, AuType.QFQ, KLType.K_DAY",
+  "start": "2015-07-01",
+  "end": "2026-08-31",
+  "parameters": {
+    "lookback": 50,
+    "projection": 20,
+    "search_history": 2520,
+    "recent_bars": 10,
+    "recent_weight": 1.0,
+    "shock_weight": 2.0
+  },
+  "symbols": [
+    {
+      "code": "US.QCOM",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "f5709d12767feab1b32441a141debf541eaa15ee39f60a95bd6e0e52d615614e",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 113,
+        "source_start": "2026-01-07",
+        "source_anchor": "2026-03-19",
+        "source_end": "2026-04-17",
+        "fit_score": 37.53819,
+        "distance": 77.90280962,
+        "realized_projection_return_pct": 3.747715,
+        "projected_bullish": true
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 113,
+        "source_start": "2026-01-07",
+        "source_anchor": "2026-03-19",
+        "source_end": "2026-04-17",
+        "fit_score": 43.356471,
+        "distance": 55.84189251,
+        "realized_projection_return_pct": 3.747715,
+        "projected_bullish": true
+      }
+    },
+    {
+      "code": "US.TTWO",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "891cf66dc460eca6ff97366815b058762aa166433522f205b3d919f77ad3a609",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 146,
+        "source_start": "2025-11-18",
+        "source_anchor": "2026-01-30",
+        "source_end": "2026-03-02",
+        "fit_score": 64.877762,
+        "distance": 28.87387961,
+        "realized_projection_return_pct": -2.914208,
+        "projected_bullish": false
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 146,
+        "source_start": "2025-11-18",
+        "source_anchor": "2026-01-30",
+        "source_end": "2026-03-02",
+        "fit_score": 66.257505,
+        "distance": 28.8798291,
+        "realized_projection_return_pct": -2.914208,
+        "projected_bullish": false
+      }
+    },
+    {
+      "code": "US.ORCL",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "82bc1db4dbb0ce4050e74e4fdbf1ebcbf415d3f039e1bb4551b76dd1a2f90454",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 101,
+        "source_start": "2026-01-26",
+        "source_anchor": "2026-04-07",
+        "source_end": "2026-05-05",
+        "fit_score": 59.516376,
+        "distance": 132.03032062,
+        "realized_projection_return_pct": 29.913636,
+        "projected_bullish": true
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 101,
+        "source_start": "2026-01-26",
+        "source_anchor": "2026-04-07",
+        "source_end": "2026-05-05",
+        "fit_score": 64.174612,
+        "distance": 83.12672544,
+        "realized_projection_return_pct": 29.913636,
+        "projected_bullish": true
+      }
+    },
+    {
+      "code": "US.AAPL",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "e8a394830d10c7f7be34ab0fd835525bca3af07c545ee553d343924cb33b97d7",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 1320,
+        "source_start": "2021-03-18",
+        "source_anchor": "2021-05-27",
+        "source_end": "2021-06-25",
+        "fit_score": 88.796126,
+        "distance": 11.977646,
+        "realized_projection_return_pct": 6.25,
+        "projected_bullish": true
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 1320,
+        "source_start": "2021-03-18",
+        "source_anchor": "2021-05-27",
+        "source_end": "2021-06-25",
+        "fit_score": 88.168642,
+        "distance": 12.95713628,
+        "realized_projection_return_pct": 6.25,
+        "projected_bullish": true
+      }
+    },
+    {
+      "code": "US.NVDA",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "578d63195081a28642d3e2809e7ca868636beee822f37d06767e92d863405574",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 2072,
+        "source_start": "2018-03-22",
+        "source_anchor": "2018-06-01",
+        "source_end": "2018-06-29",
+        "fit_score": 77.541078,
+        "distance": 24.86474173,
+        "realized_projection_return_pct": -8.042854,
+        "projected_bullish": false
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 2072,
+        "source_start": "2018-03-22",
+        "source_anchor": "2018-06-01",
+        "source_end": "2018-06-29",
+        "fit_score": 77.278444,
+        "distance": 24.60642544,
+        "realized_projection_return_pct": -8.042854,
+        "projected_bullish": false
+      }
+    },
+    {
+      "code": "US.TSLA",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "6dd2f97d30a532b6ec1313dab4d45bf7d8c33abeee8a90894c828f26d182f746",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 690,
+        "source_start": "2023-09-19",
+        "source_anchor": "2023-11-28",
+        "source_end": "2023-12-27",
+        "fit_score": 67.296798,
+        "distance": 38.78004483,
+        "realized_projection_return_pct": 5.966278,
+        "projected_bullish": true
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 690,
+        "source_start": "2023-09-19",
+        "source_anchor": "2023-11-28",
+        "source_end": "2023-12-27",
+        "fit_score": 69.346244,
+        "distance": 31.76346536,
+        "realized_projection_return_pct": 5.966278,
+        "projected_bullish": true
+      }
+    },
+    {
+      "code": "US.SPY",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "e9726a8b25187b133a0a5242d3d08c77aff926ad101f06707acef8c585c8ae64",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 2277,
+        "source_start": "2017-05-30",
+        "source_anchor": "2017-08-08",
+        "source_end": "2017-09-06",
+        "fit_score": 98.459591,
+        "distance": 1.51246166,
+        "realized_projection_return_pct": -0.149634,
+        "projected_bullish": false
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 2277,
+        "source_start": "2017-05-30",
+        "source_anchor": "2017-08-08",
+        "source_end": "2017-09-06",
+        "fit_score": 98.42819,
+        "distance": 1.54352611,
+        "realized_projection_return_pct": -0.149634,
+        "projected_bullish": false
+      }
+    },
+    {
+      "code": "US.QQQ",
+      "loaded_bars": 2808,
+      "first_bar": "2015-07-01",
+      "last_bar": "2026-08-31",
+      "candidate_count": 2450,
+      "full_history_loaded": true,
+      "ohlc_sha256": "d33c0dbe6322dc499c778a3c88884e638f5cc1c623e995259e3c504c16823e42",
+      "log": {
+        "mode": "log",
+        "selected_anchor_age": 1733,
+        "source_start": "2019-07-29",
+        "source_anchor": "2019-10-07",
+        "source_end": "2019-11-04",
+        "fit_score": 91.042366,
+        "distance": 8.88063595,
+        "realized_projection_return_pct": 6.326042,
+        "projected_bullish": true
+      },
+      "pct": {
+        "mode": "pct",
+        "selected_anchor_age": 1733,
+        "source_start": "2019-07-29",
+        "source_anchor": "2019-10-07",
+        "source_end": "2019-11-04",
+        "fit_score": 91.557046,
+        "distance": 8.14077559,
+        "realized_projection_return_pct": 6.326042,
+        "projected_bullish": true
+      }
+    }
+  ]
+}

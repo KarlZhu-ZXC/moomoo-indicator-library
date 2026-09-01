@@ -21,6 +21,8 @@ jobs:
         run: python -m compileall -q indicators
       - name: Check moomoo plot constraints
         run: python tools/validate.py
+      - name: Run repository regression tests
+        run: python -m unittest discover -s tools/tests
       - name: Simulate moomoo Sequence runtime
         run: python tools/reference/v4_1/validate_stub_runtime.py
       - name: Validate optimized algorithms
