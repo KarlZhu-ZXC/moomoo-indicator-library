@@ -1,5 +1,14 @@
 # Changelog
 
+## Library 4.2 — 2026-09-01
+
+- Added `HIST_SIM` v2.0.1 and the percentage-only `HIST_SIM_PCT` fallback as a separate collection.
+- Added exhaustive all-anchor search across up to 2520 daily bars using native `llv/llv_bars` selection.
+- Added dynamic source-date rendering, loaded-history outputs and ten-year coverage warnings.
+- Corrected the PCT fallback to import `fmath` explicitly for `floor()` date rendering.
+- Added QCOM, TTWO, ORCL, AAPL, NVDA, TSLA, SPY and QQQ real-history regressions using 2,450 candidates per symbol and mode.
+- Extended the simulated moomoo runtime to execute both HIST_SIM editions.
+
 ## Library 4.1 — 2026-08-28
 
 - Synchronized the client-validated v4/v4.1 Python indicator baseline from the referenced SMC conversation.

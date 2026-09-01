@@ -19,7 +19,8 @@ PLOT_NAMES = {
     "plot_stickline",
     "plot_text",
 }
-BANNED_GLOBAL_CALLS = {"tr", "smma", "mod", "year", "month", "day", "weekofyear"}
+BANNED_GLOBAL_CALLS = {"tr", "smma", "mod", "weekofyear"}
+CALENDAR_CALLS_REQUIRE_SOURCE = {"year", "month", "day"}
 FORBIDDEN_PLOT_PARENTS = (
     ast.FunctionDef,
     ast.AsyncFunctionDef,
@@ -48,6 +49,7 @@ def validate(path: Path) -> list[str]:
     errors: list[str] = []
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(path))
+    imported_modules = {node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom) and node.module}
     parent: dict[ast.AST, ast.AST] = {}
     for node in ast.walk(tree):
         for child in ast.iter_child_nodes(node):
@@ -60,6 +62,12 @@ def validate(path: Path) -> list[str]:
         name = call_name(node)
         if isinstance(node.func, ast.Name) and name in BANNED_GLOBAL_CALLS:
             errors.append(f"{path}:{node.lineno}: unsupported unqualified runtime call {name}()")
+        if isinstance(node.func, ast.Name) and name in CALENDAR_CALLS_REQUIRE_SOURCE and len(node.args) == 0:
+            errors.append(f"{path}:{node.lineno}: {name}() requires an explicit source Sequence in the tested runtime")
+        if isinstance(node.func, ast.Name) and name in {"floor", "math_log"} and "fmath" not in imported_modules:
+            errors.append(f"{path}:{node.lineno}: {name}() requires explicit 'from fmath import *'")
+        if isinstance(node.func, ast.Name) and name in {"year", "month", "day"} and "fdatetime" not in imported_modules:
+            errors.append(f"{path}:{node.lineno}: {name}() requires explicit 'from fdatetime import *'")
         if name not in PLOT_NAMES:
             continue
         plots.append(node)

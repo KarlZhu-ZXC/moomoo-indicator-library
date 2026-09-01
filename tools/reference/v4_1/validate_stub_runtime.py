@@ -15,6 +15,8 @@ SCRIPTS = [
     ROOT / "indicators" / "smc" / "SMC_OB.py",
     ROOT / "indicators" / "smc" / "SMC_IMB.py",
     ROOT / "indicators" / "ote" / "OTE_CP.py",
+    ROOT / "indicators" / "historical-similarity" / "HIST_SIM.py",
+    ROOT / "indicators" / "historical-similarity" / "HIST_SIM_PCT.py",
 ]
 N = 1400
 rng = np.random.default_rng(20260828)
@@ -24,6 +26,7 @@ open_arr = np.r_[close_arr[0], close_arr[:-1] * (1.0 + rng.normal(0.0, 0.003, N 
 spread = np.abs(rng.normal(0.008, 0.004, N))
 high_arr = np.maximum(open_arr, close_arr) * (1.0 + spread)
 low_arr = np.minimum(open_arr, close_arr) * (1.0 - spread)
+date_arr = np.busday_offset(np.datetime64("2021-01-01"), np.arange(N), roll="forward")
 
 
 class Seq:
@@ -68,6 +71,7 @@ class Seq:
     def __bool__(self): raise TypeError("Sequence used as scalar boolean")
     def hhv(self, n, min_period=1): return rolling_extreme(self, n, np.nanmax)
     def llv(self, n, min_period=1): return rolling_extreme(self, n, np.nanmin)
+    def llv_bars(self, n, min_period=1): return rolling_llv_bars(self, n)
     def smma(self, n=5, m=1): return smma(self, n, m)
     def sum(self, n): return sum_(self, n)
 
@@ -184,6 +188,16 @@ def rolling_extreme(x, n, fn):
     return Seq(out)
 
 
+def rolling_llv_bars(x, n):
+    a = as_seq(x).v.astype(float); n = int(n); out = np.full(N, np.nan)
+    for i in range(N):
+        start = max(0, i - n + 1); w = a[start:i + 1]
+        if np.all(np.isnan(w)): continue
+        minimum = np.nanmin(w); matches = np.flatnonzero(np.isclose(w, minimum, rtol=0.0, atol=0.0))
+        if len(matches): out[i] = len(w) - 1 - matches[-1]
+    return Seq(out)
+
+
 def smma(x, n=5, m=1):
     a = as_seq(x).v.astype(float); out = np.full(N, np.nan); alpha = float(m) / int(n)
     valid = np.flatnonzero(~np.isnan(a))
@@ -216,6 +230,21 @@ def min_(*args):
 
 
 def abs_(x): return Seq(np.abs(as_seq(x).v)) if isinstance(x, Seq) else builtins.abs(x)
+
+
+def floor_(x): return Seq(np.floor(as_seq(x).v)) if isinstance(x, Seq) else math.floor(x)
+
+
+def math_log(x, base):
+    if isinstance(x, Seq):
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return Seq(np.log(as_seq(x).v) / math.log(base))
+    return math.log(x, base)
+
+
+def year_(source): return Seq(date_arr.astype("datetime64[Y]").astype(int) + 1970)
+def month_(source): return Seq((date_arr.astype("datetime64[M]").astype(int) % 12) + 1)
+def day_(source): return Seq((date_arr - date_arr.astype("datetime64[M]")).astype(int) + 1)
 
 
 def iff(logical, a, b):
@@ -279,6 +308,14 @@ def install_ftool():
     }
     module = types.ModuleType("ftool"); module.__dict__.update(public); module.__all__ = list(public)
     sys.modules["ftool"] = module
+
+    fmath_public = {"math_log": math_log, "floor": floor_}
+    fmath_module = types.ModuleType("fmath"); fmath_module.__dict__.update(fmath_public); fmath_module.__all__ = list(fmath_public)
+    sys.modules["fmath"] = fmath_module
+
+    fdatetime_public = {"year": year_, "month": month_, "day": day_}
+    fdatetime_module = types.ModuleType("fdatetime"); fdatetime_module.__dict__.update(fdatetime_public); fdatetime_module.__all__ = list(fdatetime_public)
+    sys.modules["fdatetime"] = fdatetime_module
 
 
 def run(script):

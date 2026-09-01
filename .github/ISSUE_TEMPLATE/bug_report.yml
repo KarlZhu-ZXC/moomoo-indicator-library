@@ -7,7 +7,7 @@ body:
     id: module
     attributes:
       label: Module
-      options: [OTE_CP, SMC_STR, SMC_OB, SMC_IMB]
+      options: [HIST_SIM, HIST_SIM_PCT, OTE_CP, SMC_STR, SMC_OB, SMC_IMB]
     validations:
       required: true
   - type: input

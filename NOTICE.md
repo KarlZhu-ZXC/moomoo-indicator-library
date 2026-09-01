@@ -29,6 +29,10 @@ The Pine v5 indicator was adapted for the moomoo Python custom-indicator runtime
 
 The implementation is not a line-for-line translation and does not include a copy of the upstream Pine source. Refer to the pinned source link above for the original work.
 
+## Historical Similarity collection
+
+`indicators/historical-similarity/HIST_SIM.py` and `HIST_SIM_PCT.py` are original repository contributions distributed under CC BY-NC-SA 4.0. They compare normalized historical price paths; no external indicator source code is included.
+
 ## No affiliation
 
 This is an unofficial community project. It is not affiliated with, endorsed by, or sponsored by ICT, ChartPrime, LuxAlgo, TradingView, moomoo, or Futu. All product names and trademarks belong to their respective owners.
